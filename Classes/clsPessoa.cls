@@ -25,9 +25,9 @@ Public tp_Cliente               As String
 Public tp_Fornecedor            As String
 Public tp_Funcionario           As String
 
-Public gravar                   As Boolean
+Public enuGravacao              As EnumStatusGravacao
 Public colPessoaContato         As Collection
-Public mensagemRetorno          As String
+Public strMensagemRetorno       As String
 
 Private Sub Class_Initialize()
 On Error GoTo err_Class_Initialize
@@ -44,11 +44,12 @@ On Error GoTo err_Class_Initialize
     tp_Fornecedor = ""
     tp_Funcionario = ""
     
-    mensagemRetorno = ""
+    enuGravacao = Nenhum
+    strMensagemRetorno = ""
     Set colPessoaContato = New Collection
     Exit Sub
 err_Class_Initialize:
-    mensagemRetorno = "Erro ao inicializar classe."
+    strMensagemRetorno = "Erro ao inicializar classe."
 End Sub
 
 Public Function Campos() As String
@@ -67,25 +68,25 @@ On Error GoTo err_AdicionarContato
     cPessoaContato.ds_Nome = ds_Nome
     cPessoaContato.cd_Fone = cd_Fone
     cPessoaContato.cd_Email = cd_Email
-    cPessoaContato.blnGravar = True
+    cPessoaContato.enuGravacao = Incluir
     
     Call colPessoaContato.Add(cPessoaContato)
     Set cPessoaContato = Nothing
         
     Exit Function
 err_AdicionarContato:
-    mensagemRetorno = "Erro ao adicionar contato."
+    strMensagemRetorno = "Erro ao adicionar contato."
 End Function
-Private Function Remover(ByVal id As Long)
+Private Function Remover(ByVal ID As Long)
 On Error GoTo err_Remover
     Dim cPessoaContato As New clsPessoaContato
     
-    Call cPessoaContato.CarregarDados(id)
+    Call cPessoaContato.CarregarDados(ID)
     
     
     Exit Function
 err_Remover:
-    mensagemRetorno = "Erro ao remover contato."
+    strMensagemRetorno = "Erro ao remover contato."
 End Function
 
 Private Sub Class_Terminate()

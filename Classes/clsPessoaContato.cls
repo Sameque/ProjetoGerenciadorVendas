@@ -19,8 +19,7 @@ Public ds_Nome                  As String
 Public cd_Fone                  As String
 Public cd_Email                 As String
 
-Public blnGravar                As Boolean
-Public blnExcluir               As Boolean
+Public enuGravacao              As EnumStatusGravacao
 Public strMensagemRetorno       As String
 
 
@@ -40,9 +39,8 @@ On Error GoTo err_Class_Initialize
     ds_Nome = ""
     cd_Fone = ""
     cd_Email = ""
-    
-    blnGravar = False
-    blnExcluir = False
+        
+    enuGravacao = Nenhum
     strMensagemRetorno = ""
     
     Exit Sub

@@ -105,6 +105,7 @@ Form=Forms\frmPessoaFuncionario.frm
 Form=Forms\frmTesteClasse.frm
 Class=clsPessoaContato; Classes\clsPessoaContato.cls
 Class=clsPessoaServico; Classes\clsPessoaServico.cls
+Class=clsServicoBase; ..\Projetos\ComunsNovo\Classes\NovoPadrao\Servicos\clsServicoBase.cls
 Startup="frmMDI"
 HelpFile=""
 Title="CTe Rodoviário"
