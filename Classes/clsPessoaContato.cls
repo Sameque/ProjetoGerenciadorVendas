@@ -22,9 +22,15 @@ Public cd_Email                 As String
 Public enuGravacao              As EnumStatusGravacao
 Public strMensagemRetorno       As String
 
-
+Public Function Tabela() As String
+    Tabela = "tbdPessoaContato"
+End Function
 Public Function Campos() As String
     Campos = "id_Pessoa, ds_Nome, cd_Fone, cd_Email"
+End Function
+
+Public Function ChavePrimaria() As String
+    ChavePrimaria = "id_PessoaContato"
 End Function
 
 Public Function Conteudo()
@@ -40,7 +46,7 @@ On Error GoTo err_Class_Initialize
     cd_Fone = ""
     cd_Email = ""
         
-    enuGravacao = Nenhum
+    enuGravacao = EnumStatusGravacao.Nenhum
     strMensagemRetorno = ""
     
     Exit Sub

@@ -44,7 +44,7 @@ On Error GoTo err_Class_Initialize
     tp_Fornecedor = ""
     tp_Funcionario = ""
     
-    enuGravacao = Nenhum
+    enuGravacao = EnumStatusGravacao.Nenhum
     strMensagemRetorno = ""
     Set colPessoaContato = New Collection
     Exit Sub
@@ -52,8 +52,16 @@ err_Class_Initialize:
     strMensagemRetorno = "Erro ao inicializar classe."
 End Sub
 
+Public Function ChavePrimaria() As String
+    ChavePrimaria = "id_Pessoa"
+End Function
+
 Public Function Campos() As String
     Campos = "cd_cnpjcpf, ds_Pessoa, ds_RazaoSocial, ds_Endereco, ds_Bairro, id_Cidade, cd_CEP, tp_Cliente, tp_Fornecedor, tp_Funcionario"
+End Function
+
+Public Function Tabela() As String
+    Tabela = "tbdPessoa"
 End Function
 
 Public Function Conteudo()
@@ -68,7 +76,7 @@ On Error GoTo err_AdicionarContato
     cPessoaContato.ds_Nome = ds_Nome
     cPessoaContato.cd_Fone = cd_Fone
     cPessoaContato.cd_Email = cd_Email
-    cPessoaContato.enuGravacao = Incluir
+    cPessoaContato.enuGravacao = EnumStatusGravacao.Incluir
     
     Call colPessoaContato.Add(cPessoaContato)
     Set cPessoaContato = Nothing
@@ -77,13 +85,13 @@ On Error GoTo err_AdicionarContato
 err_AdicionarContato:
     strMensagemRetorno = "Erro ao adicionar contato."
 End Function
-Private Function Remover(ByVal ID As Long)
+Public Function Remover(ByVal lngIdRemocao As Long)
 On Error GoTo err_Remover
     Dim cPessoaContato As New clsPessoaContato
     
-    Call cPessoaContato.CarregarDados(ID)
-    
-    
+    Call cPessoaContato.ChavePrimaria
+    Call cPessoaContato.CarregarDados(lngIdRemocao)
+
     Exit Function
 err_Remover:
     strMensagemRetorno = "Erro ao remover contato."
