@@ -25,7 +25,7 @@ Public tp_Cliente               As String
 Public tp_Fornecedor            As String
 Public tp_Funcionario           As String
 
-Public enuGravacao              As EnumStatusGravacao
+Public StatusGravacao           As EnumStatusGravacao
 Public colPessoaContato         As Collection
 Public strMensagemRetorno       As String
 
@@ -44,7 +44,7 @@ On Error GoTo err_Class_Initialize
     tp_Fornecedor = ""
     tp_Funcionario = ""
     
-    enuGravacao = EnumStatusGravacao.Nenhum
+    StatusGravacao = EnumStatusGravacao.Nenhum
     strMensagemRetorno = ""
     Set colPessoaContato = New Collection
     Exit Sub
@@ -76,7 +76,7 @@ On Error GoTo err_AdicionarContato
     cPessoaContato.ds_Nome = ds_Nome
     cPessoaContato.cd_Fone = cd_Fone
     cPessoaContato.cd_Email = cd_Email
-    cPessoaContato.enuGravacao = EnumStatusGravacao.Incluir
+    cPessoaContato.StatusGravacao = EnumStatusGravacao.Incluir
     
     Call colPessoaContato.Add(cPessoaContato)
     Set cPessoaContato = Nothing

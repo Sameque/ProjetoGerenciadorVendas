@@ -19,7 +19,7 @@ Public ds_Nome                  As String
 Public cd_Fone                  As String
 Public cd_Email                 As String
 
-Public enuGravacao              As EnumStatusGravacao
+Public StatusGravacao           As EnumStatusGravacao
 Public strMensagemRetorno       As String
 
 Public Function Tabela() As String
@@ -46,7 +46,7 @@ On Error GoTo err_Class_Initialize
     cd_Fone = ""
     cd_Email = ""
         
-    enuGravacao = EnumStatusGravacao.Nenhum
+    StatusGravacao = EnumStatusGravacao.Nenhum
     strMensagemRetorno = ""
     
     Exit Sub

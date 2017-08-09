@@ -4,11 +4,20 @@ Begin VB.Form frmTesteClasse
    ClientHeight    =   5550
    ClientLeft      =   60
    ClientTop       =   345
-   ClientWidth     =   6945
+   ClientWidth     =   9105
    LinkTopic       =   "Form1"
    MDIChild        =   -1  'True
    ScaleHeight     =   5550
-   ScaleWidth      =   6945
+   ScaleWidth      =   9105
+   Begin Transportes.SuperSpreadNovo sprContato 
+      Height          =   1815
+      Left            =   60
+      TabIndex        =   3
+      Top             =   2535
+      Width           =   9000
+      _ExtentX        =   15875
+      _ExtentY        =   3201
+   End
    Begin VB.CommandButton cmdFuncionalidade 
       Caption         =   "Testar Funcionalidade"
       Height          =   540
@@ -44,6 +53,7 @@ Option Explicit
 Public MsgCarregar
 Public MsgGravar
 Public MsgAtualizar
+Public MsgCarregarSpread
 Public MsgExcluir
 
 Private Sub cmdTesteVenda_Click()
@@ -68,11 +78,9 @@ Private Sub cmdTestarClassePessoa_Click()
     Dim cPessoa As New clsPessoa
     Dim cPessoaServico  As New clsPessoaServico
         
-    Call IniciarClasse(cPessoa)
-    Call AddContato(cPessoa)
-    Call TestarClassePessoa(cPessoa)
     
-    Call sprContato.FormatarPorClasse(cServicoPessoa.FormatarSpreadPessoaContato)
+        
+    Call TestarClassePessoa(cPessoa)
 
 End Sub
 Private Function AddContato(ByRef cPessoa As clsPessoa)
@@ -88,31 +96,40 @@ Private Function TestarClassePessoa(cPessoa As clsPessoa)
     
     Dim cPessoaServico  As New clsPessoaServico
     Dim id              As Long
-    
-    cPessoa.enuGravacao = EnumStatusGravacao.Incluir
-    
+        
+    Call IniciarClasse(cPessoa)
     If Not cPessoaServico.Salvar(cPessoa) Then
         MsgGravar = cPessoaServico.strMensagemRetorno
     Else
         id = cPessoa.id_Pessoa
-        MsgGravar = " :) Gravação OK!"
+        MsgGravar = "OK"
     End If
     
-    Set cPessoa = Nothing
-    Set cPessoa = cPessoaServico.CarregarClasse(id)
-
-    cPessoa.enuGravacao = EnumStatusGravacao.Alterar
+    Call AddContato(cPessoa)
+    cPessoa.ds_Pessoa = UCase(cPessoa.ds_Pessoa)
+    cPessoa.StatusGravacao = EnumStatusGravacao.Alterar
+    
     If Not cPessoaServico.Salvar(cPessoa) Then
         MsgAtualizar = cPessoaServico.strMensagemRetorno
     Else
-        MsgAtualizar = " :) Atualizadção OK!"
+        MsgAtualizar = "OK"
     End If
-
-    cPessoa.enuGravacao = EnumStatusGravacao.Excluir
+      
+    Set cPessoa = Nothing
+    Set cPessoa = cPessoaServico.CarregarClasse(id)
+        
+    Call sprContato.FormatarPorClasse(cPessoaServico.FormatarSpreadPessoaContato)
+    Call sprContato.CarregarPorClasse("id_Pessoa = " & cPessoa.id_Pessoa)
+    
+    If sprContato.Col > 0 Then
+        MsgCarregarSpread = "OK"
+    End If
+    
+    cPessoa.StatusGravacao = EnumStatusGravacao.Excluir
     If Not cPessoaServico.Salvar(cPessoa) Then
         MsgExcluir = cPessoaServico.strMensagemRetorno
     Else
-        MsgExcluir = " :) Exclusão OK!"
+        MsgExcluir = "OK"
     End If
     
     Call Resultado
@@ -134,16 +151,16 @@ Private Function IniciarClasse(ByRef cPessoa As clsPessoa) As Boolean
         .tp_Funcionario = "N"
         .cd_cnpjcpf = "123456789"
         .cd_CEP = "13600970"
-        .enuGravacao = Alterar
+        .StatusGravacao = EnumStatusGravacao.Incluir
     End With
     
 End Function
 
 Private Function Resultado()
-    Mensagem MsgCarregar & vbCrLf _
-            & MsgGravar & vbCrLf _
-            & MsgAtualizar & vbCrLf _
-            & MsgExcluir & vbCrLf _
+    Mensagem "Gravar: " & MsgGravar & vbCrLf _
+            & "Atualizar: " & MsgAtualizar & vbCrLf _
+            & "Carregar Spread: " & MsgCarregarSpread & vbCrLf _
+            & "Excluir: " & MsgExcluir & vbCrLf _
     , Informacao
     
 End Function
@@ -207,6 +224,7 @@ Private Function LimparMsg()
     MsgCarregar = ""
     MsgGravar = ""
     MsgAtualizar = ""
+    MsgCarregarSpread = ""
     MsgExcluir = ""
-
+    
 End Function

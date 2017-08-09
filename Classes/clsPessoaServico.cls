@@ -78,7 +78,7 @@ On Error GoTo err_CarregarContato
     strCampos = "id_PessoaContato,id_Pessoa,ds_Nome,cd_Fone,cd_Email"
     CarregarContato = False
     
-    Call Select_Table(True, "tbdPessoaContato", strCampos, "id_Pessoa = " & cPessoa.id_Pessoa, , , , , rsado)
+    Call Select_Table(True, cPessoaContato.Tabela, strCampos, "id_Pessoa = " & cPessoa.id_Pessoa, , , , , rsado)
         
     Do While Not rsado.EOF
         With cPessoaContato
@@ -87,7 +87,7 @@ On Error GoTo err_CarregarContato
             .ds_Nome = ReadField(rsado, "ds_Nome")
             .cd_Fone = ReadField(rsado, "cd_Fone")
             .cd_Email = ReadField(rsado, "cd_Email")
-            .enuGravacao = EnumStatusGravacao.Nenhum
+            .StatusGravacao = EnumStatusGravacao.Nenhum
         End With
         
         Call cPessoa.colPessoaContato.Add(cPessoaContato)
@@ -100,11 +100,6 @@ On Error GoTo err_CarregarContato
     CarregarContato = True
     Set cPessoaContato = Nothing
         
-    If Not CarregarContato Then
-        strMensagemRetorno = "Erro ao carregar classe."
-        Exit Function
-    End If
-        
     Exit Function
 err_CarregarContato:
     ShowError
@@ -114,27 +109,30 @@ End Function
 Public Function Salvar(ByRef cPessoa As clsPessoa) As Boolean
 On Error GoTo err_Salvar
 
-    Call AbreTransacao
-    If cPessoa.enuGravacao = EnumStatusGravacao.Nenhum Then
+    If cPessoa.StatusGravacao = EnumStatusGravacao.Nenhum Then
         Exit Function
-    ElseIf cPessoa.enuGravacao = EnumStatusGravacao.Excluir Then
+        
+    ElseIf cPessoa.StatusGravacao = EnumStatusGravacao.Excluir Then
+        If Not ExcluirContato(cPessoa, True) Then
+            strMensagemRetorno = cPessoa.strMensagemRetorno
+            Exit Function
+        End If
+        
         Salvar = Excluir(cPessoa)
     Else
         Salvar = Gravar(cPessoa)
+        Call SalvarContato(cPessoa)
     End If
 
     If Not Salvar Then
         strMensagemRetorno = "Erro no processo de gravação de pessoa."
-        Exit Sub
+        Exit Function
     End If
     
-    Call SalvarContato(cPessoa)
-    Call FechaTransacao
-
-    Exit Sub
+    Exit Function
 err_Salvar:
     strMensagemRetorno = "Erro no processo de gravação de pessoa."
-End Sub
+End Function
 
 Private Function SalvarContato(cPessoa As clsPessoa) As Boolean
 On erro GoTo err_SalvarContato
@@ -145,18 +143,19 @@ On erro GoTo err_SalvarContato
 
     For Each cPessoaContato In cPessoa.colPessoaContato
         With cPessoaContato
-            Call cServicoBase.SetarTabela(.Tabela, .ChavePrimaria, .id_Pessoa, False, True)
-            Call cServicoBase.SetarCampos(.Campos, .Conteudo, .enuGravacao)
+            Call cServicoBase.SetarTabela(.Tabela, .ChavePrimaria, .id_PessoaContato, False, True)
+            Call cServicoBase.SetarCampos(.Campos, .Conteudo, .StatusGravacao)
             
             If cServicoBase.Salvar Then
-                SalvarContato = True
-                .id_Pessoa = cServicoBase.ValorChavePrimaria
+                .id_PessoaContato = cServicoBase.ValorChavePrimaria
             Else
                 strMensagemRetorno = cServicoBase.MensagemRetorno
+                Exit Function
             End If
         End With
-        
     Next
+    
+    SalvarContato = True
     
     Exit Function
 err_SalvarContato:
@@ -169,18 +168,20 @@ On Error GoTo err_Gravar
     
     Gravar = False
     
+    Call CarregarValidacaoPessoa(cServicoBase, cPessoa)
+    
     With cPessoa
         Call cServicoBase.SetarTabela(.Tabela, .ChavePrimaria, .id_Pessoa, False, True)
-        Call cServicoBase.SetarCampos(.Campos, .Conteudo, .enuGravacao)
-        
-        If cServicoBase.Salvar Then
-            Gravar = True
-            cPessoa.id_Pessoa = cServicoBase.ValorChavePrimaria
-        Else
-            strMensagemRetorno = cServicoBase.MensagemRetorno
-        End If
-        
+        Call cServicoBase.SetarCampos(.Campos, .Conteudo, .StatusGravacao)
     End With
+                        
+    If cServicoBase.Salvar Then
+        Gravar = True
+        cPessoa.id_Pessoa = cServicoBase.ValorChavePrimaria
+    Else
+        strMensagemRetorno = cServicoBase.MensagemRetorno
+        Exit Function
+    End If
     
     Set cServicoBase = Nothing
 
@@ -200,7 +201,7 @@ On Error GoTo err_GravarContato
         With cPessoaContato
             .id_Pessoa = cPessoa.id_Pessoa
             Call cServicoBase.SetarTabela("tbdPessoaContato", "id_PessoaContato", .id_PessoaContato, False, True)
-            Call cServicoBase.SetarCampos(.Campos, .Conteudo, .enuGravacao)
+            Call cServicoBase.SetarCampos(.Campos, .Conteudo, .StatusGravacao)
         End With
         
         If cServicoBase.Salvar Then
@@ -222,53 +223,53 @@ End Function
 Private Function Excluir(ByRef cPessoa As clsPessoa) As Boolean
 On Error GoTo err_Excluir
     Dim cServicoBase As New clsServicoBase
-
+    Dim str As String
+    
     Call ExcluirContato(cPessoa, True)
-    'TIRAR AS TABELAS E OS CAMPOS P VER SE EXCLUI
+    
     With cPessoa
         Call cServicoBase.SetarTabela(.Tabela, .ChavePrimaria, .id_Pessoa, False, True)
-        Call cServicoBase.SetarCampos(.Campos, .Conteudo, .enuGravacao)
+        Call cServicoBase.SetarCampos(.Campos, .Conteudo, .StatusGravacao)
         Excluir = cServicoBase.Salvar
     End With
     
-    If Not GravarContato(cPessoa) Then
-        strMensagemRetorno = "Erro ao excluir."
-        Call VoltaTransacao
-    End If
-    
     Set cServicoBase = Nothing
+    Set cPessoa = Nothing
     
     Exit Function
 err_Excluir:
-    strMensagemRetorno = "Erro ao excluir."
+    strMensagemRetorno = "Erro ao excluir pessoa."
 End Function
 
-Private Function ExcluirContato(ByRef cPessoa As clsPessoa, Optional ByVal blnExcluirTodos As Boolean) As Boolean
+Private Function ExcluirContato(ByRef cPessoa As clsPessoa, Optional ByVal blnExcluirTodos As Boolean = False) As Boolean
 On Error GoTo err_ExcluirContato
     Dim cPessoaContato  As New clsPessoaContato
-    Dim cServicoBase As New clsServicoBase
+    Dim cServicoBase    As New clsServicoBase
+    Dim lngIndice       As Long
     
     ExcluirContato = False
-    
+    lngIndice = 1
     'TIRAR AS TABELAS E OS CAMPOS P VER SE EXCLUI
     For Each cPessoaContato In cPessoa.colPessoaContato
         With cPessoaContato
             .id_Pessoa = cPessoa.id_Pessoa
             Call cServicoBase.SetarTabela(.Tabela, .ChavePrimaria, .id_PessoaContato, False, True)
-            Call cServicoBase.SetarCampos(.Campos, .Conteudo, .enuGravacao)
+            Call cServicoBase.SetarCampos(.Campos, .Conteudo, IIf(blnExcluirTodos, EnumStatusGravacao.Excluir, .StatusGravacao))
         End With
         
         If cServicoBase.Salvar Then
             ExcluirContato = True
-            cPessoaContato.id_PessoaContato = cServicoBase.ValorChavePrimaria
         Else
             strMensagemRetorno = cServicoBase.MensagemRetorno
+            Exit Function
         End If
+        lngIndice = lngIndice + 1
     Next
     
     Set cPessoaContato = Nothing
     Set cServicoBase = Nothing
-    
+        
+    Exit Function
 err_ExcluirContato:
     ShowError
     strMensagemRetorno = "Erro ao excluir contato"
@@ -280,17 +281,16 @@ On Error GoTo err_FormatarSpreadPessoaContato
     Dim cFormatacaoForm As New clsESLFormatacaoForm
     Dim cPessoaContato As New clsPessoaContato
     
-    'Formatação do Select
     cFormatacaoForm.Tabela = cPessoaContato.Tabela
     cFormatacaoForm.Campos = cPessoaContato.ChavePrimaria & ", " & cPessoaContato.Campos
     cFormatacaoForm.OrderBY = "ds_Nome"
 
-    'Formatação do spread
     cFormatacaoForm.ControlaClickSpread = True
     cFormatacaoForm.ControlaQueryAdvance = True
     cFormatacaoForm.ExcluirRegistro = True
 
-    Call cFormatacaoForm.AdicionarColunaSpread(True, False, "id_PessoaContato", eslnumero, True, True, "id_PessoaContato", "PessoaContato")
+    Call cFormatacaoForm.AdicionarColunaSpread(True, False, "id_PessoaContato", eslnumero, True, True, "id_PessoaContato", "id_PessoaContato")
+    Call cFormatacaoForm.AdicionarColunaSpread(True, False, "id_Pessoa", eslnumero, True, True, "id_Pessoa", "id_Pessoa")
     Call cFormatacaoForm.AdicionarColunaSpread(True, False, "ds_Nome", eslTexto, False, False, "ds_Nome", "Nome", 20, 50)
     Call cFormatacaoForm.AdicionarColunaSpread(True, False, "nr_Telefone", eslTexto, False, True, "nr_Telefone", "Telefone", 20, 30)
     Call cFormatacaoForm.AdicionarColunaSpread(True, False, "cd_Email", eslTexto, False, True, "ds_Email", "Email", 25, 100)
@@ -303,9 +303,9 @@ err_FormatarSpreadPessoaContato:
 End Function
 
 Private Sub CarregarValidacaoPessoa(cServicoBase As clsServicoBase, cPessoa As clsPessoa)
-    If cPessoa.StatusGravacao <> EnumStatusGravacao.Excluir Then
+    If cPessoa.StatusGravacao <> EnumStatusGravacao.Excluir And cPessoa.StatusGravacao <> EnumStatusGravacao.Nenhum Then
+        Call cServicoBase.AdicionarValidacao(Trim(cPessoa.ds_Pessoa) <> "", "Nome", "", EnumAcaoMensagem.Bloquear)
         Call cServicoBase.AdicionarValidacao(Trim(cPessoa.cd_cnpjcpf) <> "", "CNPJ/CPF", "", EnumAcaoMensagem.Bloquear)
-        Call cServicoBase.AdicionarValidacao(Trim(cPessoa.ds_Nome) <> "", "Nome Fantasia", "", EnumAcaoMensagem.Bloquear)
-        Call cServicoBase.AdicionarValidacao(Trim(cPessoa.ds_RazaoSocial) <> "", "Razão Social", "", EnumAcaoMensagem.Bloquear)
+        Call cServicoBase.AdicionarValidacao(Trim(cPessoa.ds_RazaoSocial) <> "", "Razão Social", "", EnumAcaoMensagem.Alertar)
     End If
 End Sub
