@@ -258,7 +258,7 @@ Private Sub Form_Load()
     
     Call CenterForm(Me)
     
-    cmdGravar.Value = True
+    'cmdGravar.Value = True
 
     Exit Sub
 err_FormLoad:

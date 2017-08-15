@@ -1,14 +1,17 @@
 VERSION 5.00
 Begin VB.Form frmTesteClasse 
+   BorderStyle     =   1  'Fixed Single
    Caption         =   "Teste Classe"
    ClientHeight    =   5550
-   ClientLeft      =   60
-   ClientTop       =   345
-   ClientWidth     =   9105
+   ClientLeft      =   45
+   ClientTop       =   330
+   ClientWidth     =   9075
    LinkTopic       =   "Form1"
+   MaxButton       =   0   'False
    MDIChild        =   -1  'True
+   MinButton       =   0   'False
    ScaleHeight     =   5550
-   ScaleWidth      =   9105
+   ScaleWidth      =   9075
    Begin Transportes.SuperSpreadNovo sprContato 
       Height          =   1815
       Left            =   60
@@ -77,31 +80,38 @@ Private Sub cmdTestarClassePessoa_Click()
     
     Dim cPessoa As New clsPessoa
     Dim cPessoaServico  As New clsPessoaServico
-        
     
-        
     Call TestarClassePessoa(cPessoa)
 
 End Sub
+
 Private Function AddContato(ByRef cPessoa As clsPessoa)
 
-    Call cPessoa.AdicionarContato("nome", "1234567890", "aaaaaaaa@provedor.com")
-    Call cPessoa.AdicionarContato("Fulano", "1234567890", "bbbbbb@provedor.com")
-    Call cPessoa.AdicionarContato("Beltranome", "1234567890", "evveveveve@provedor.com")
-    Call cPessoa.AdicionarContato("Cavalo", "1234567890", "123@456.789")
+    Call cPessoa.AdicionarContato(0, "nome", "1234567890", "aaaaaaaa@provedor.com")
+    Call cPessoa.AdicionarContato(0, "Fulano", "1234567890", "bbbbbb@provedor.com")
+    Call cPessoa.AdicionarContato(0, "Beltranome", "1234567890", "evveveveve@provedor.com")
+    Call cPessoa.AdicionarContato(0, "Cavalo", "1234567890", "123@456.789")
 
+End Function
+
+Private Function RemoverPrimeiroContato(ByRef cPessoa As clsPessoa)
+   Dim cPessoaContato As New clsPessoaContato
+   
+   Set cPessoaContato = cPessoa.GetListaContatos(1)
+   cPessoaContato.ds_Nome = UCase(cPessoaContato.ds_Nome)
+    'call cPessoa.GetListaContatos(1).StatusGravacao = EnumStatusGravacao.Alterar
 End Function
 
 Private Function TestarClassePessoa(cPessoa As clsPessoa)
     
     Dim cPessoaServico  As New clsPessoaServico
-    Dim id              As Long
-        
+    Dim ID              As Long
+    
     Call IniciarClasse(cPessoa)
     If Not cPessoaServico.Salvar(cPessoa) Then
-        MsgGravar = cPessoaServico.strMensagemRetorno
+        MsgGravar = cPessoaServico.mstrMensagemRetorno
     Else
-        id = cPessoa.id_Pessoa
+        ID = cPessoa.id_Pessoa
         MsgGravar = "OK"
     End If
     
@@ -110,28 +120,34 @@ Private Function TestarClassePessoa(cPessoa As clsPessoa)
     cPessoa.StatusGravacao = EnumStatusGravacao.Alterar
     
     If Not cPessoaServico.Salvar(cPessoa) Then
-        MsgAtualizar = cPessoaServico.strMensagemRetorno
+        MsgAtualizar = cPessoaServico.mstrMensagemRetorno
     Else
         MsgAtualizar = "OK"
     End If
       
     Set cPessoa = Nothing
-    Set cPessoa = cPessoaServico.CarregarClasse(id)
-        
+    Set cPessoa = cPessoaServico.CarregarPorID(ID, True)
+    
     Call sprContato.FormatarPorClasse(cPessoaServico.FormatarSpreadPessoaContato)
     Call sprContato.CarregarPorClasse("id_Pessoa = " & cPessoa.id_Pessoa)
+    
+    Call RemoverPrimeiroContato(cPessoa)
+    Call cPessoaServico.Salvar(cPessoa)
+    
+    Call sprContato.AtualizarStatus(cPessoa.GetListaContatos)
     
     If sprContato.Col > 0 Then
         MsgCarregarSpread = "OK"
     End If
     
     cPessoa.StatusGravacao = EnumStatusGravacao.Excluir
+    
     If Not cPessoaServico.Salvar(cPessoa) Then
-        MsgExcluir = cPessoaServico.strMensagemRetorno
+        MsgExcluir = cPessoaServico.mstrMensagemRetorno
     Else
         MsgExcluir = "OK"
     End If
-    
+        
     Call Resultado
     Call LimparMsg
     Set cPessoa = Nothing
@@ -166,7 +182,7 @@ Private Function Resultado()
 End Function
 Private Function TestarClasseVenda()
     Dim cVenda  As clsVenda
-    Dim id      As Long
+    Dim ID      As Long
         
     MensagemRetorno = ""
     

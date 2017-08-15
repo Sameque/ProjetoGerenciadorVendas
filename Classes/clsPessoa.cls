@@ -26,8 +26,8 @@ Public tp_Fornecedor            As String
 Public tp_Funcionario           As String
 
 Public StatusGravacao           As EnumStatusGravacao
-Public colPessoaContato         As Collection
 Public strMensagemRetorno       As String
+Private colPessoaContato        As Collection
 
 Private Sub Class_Initialize()
 On Error GoTo err_Class_Initialize
@@ -52,6 +52,41 @@ err_Class_Initialize:
     strMensagemRetorno = "Erro ao inicializar classe."
 End Sub
 
+Public Function AdicionarContato(ByVal id_PessoaContato As Long, ByVal ds_Nome As String, ByVal cd_Fone As String, ByVal cd_Email As String)
+On Error GoTo err_AdicionarContato
+    Dim cPessoaContato As New clsPessoaContato
+    
+    With cPessoaContato
+        .ID = id_PessoaContato
+        .id_Pessoa = Me.id_Pessoa
+        .ds_Nome = ds_Nome
+        .cd_Fone = cd_Fone
+        .cd_Email = cd_Email
+        .StatusGravacao = EnumStatusGravacao.Incluir
+    End With
+    
+    cPessoaContato.id_Pessoa = id_Pessoa
+    
+    cPessoaContato.ds_Nome = ds_Nome
+    cPessoaContato.cd_Fone = cd_Fone
+    cPessoaContato.cd_Email = cd_Email
+    cPessoaContato.StatusGravacao = EnumStatusGravacao.Incluir
+    
+    Call colPessoaContato.Add(cPessoaContato)
+    Set cPessoaContato = Nothing
+        
+    Exit Function
+err_AdicionarContato:
+    strMensagemRetorno = "Erro ao adicionar contato."
+End Function
+Public Sub ZerarListas()
+    Set colPessoaContato = New Collection
+End Sub
+
+Public Property Get GetListaContatos() As Collection
+    Set GetListaContatos = colPessoaContato
+End Property
+
 Public Function ChavePrimaria() As String
     ChavePrimaria = "id_Pessoa"
 End Function
@@ -66,35 +101,6 @@ End Function
 
 Public Function Conteudo()
     Conteudo = Array(cd_cnpjcpf, ds_Pessoa, ds_RazaoSocial, ds_Endereco, ds_Bairro, id_Cidade, cd_CEP, tp_Cliente, tp_Fornecedor, tp_Funcionario)
-End Function
-
-Public Function AdicionarContato(ByVal ds_Nome As String, ByVal cd_Fone As String, ByVal cd_Email As String)
-On Error GoTo err_AdicionarContato
-    Dim cPessoaContato As New clsPessoaContato
-    
-    cPessoaContato.id_Pessoa = id_Pessoa
-    cPessoaContato.ds_Nome = ds_Nome
-    cPessoaContato.cd_Fone = cd_Fone
-    cPessoaContato.cd_Email = cd_Email
-    cPessoaContato.StatusGravacao = EnumStatusGravacao.Incluir
-    
-    Call colPessoaContato.Add(cPessoaContato)
-    Set cPessoaContato = Nothing
-        
-    Exit Function
-err_AdicionarContato:
-    strMensagemRetorno = "Erro ao adicionar contato."
-End Function
-Public Function Remover(ByVal lngIdRemocao As Long)
-On Error GoTo err_Remover
-    Dim cPessoaContato As New clsPessoaContato
-    
-    Call cPessoaContato.ChavePrimaria
-    Call cPessoaContato.CarregarDados(lngIdRemocao)
-
-    Exit Function
-err_Remover:
-    strMensagemRetorno = "Erro ao remover contato."
 End Function
 
 Private Sub Class_Terminate()

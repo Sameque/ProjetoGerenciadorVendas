@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 Option Explicit
 
-Public id_PessoaContato         As Long
+Public ID                       As Long
 Public id_Pessoa                As Long
 Public ds_Nome                  As String
 Public cd_Fone                  As String
@@ -40,7 +40,7 @@ End Function
 Private Sub Class_Initialize()
 On Error GoTo err_Class_Initialize
     
-    id_PessoaContato = 0
+    ID = 0
     id_Pessoa = 0
     ds_Nome = ""
     cd_Fone = ""
