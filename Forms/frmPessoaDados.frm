@@ -18,9 +18,12 @@ Begin VB.Form frmPessoaDados
       TabIndex        =   20
       Top             =   2550
       Width           =   8340
-      _extentx        =   14711
-      _extenty        =   2990
-      label           =   "Contatos"
+      _ExtentX        =   14711
+      _ExtentY        =   2990
+      BackColorCellAtiva=   14733514
+      GrayAreaBackColor=   14670555
+      SkinESL         =   -1  'True
+      Label           =   "Contatos"
    End
    Begin VB.CommandButton cmdNovo 
       Caption         =   "&Novo"
@@ -75,16 +78,18 @@ Begin VB.Form frmPessoaDados
       EndProperty
       ShadowStyle     =   1
       Begin Transportes.SuperControlNovo mskCEP 
-         Height          =   315
-         Left            =   2380
+         Height          =   285
+         Left            =   2385
          TabIndex        =   4
          Top             =   1065
          Width           =   1740
-         _extentx        =   2540
-         _extenty        =   556
-         tooltip         =   ""
-         mascara         =   7
-         mensagemvalidacao=   "o CEP"
+         _ExtentX        =   3069
+         _ExtentY        =   503
+         ToolTip         =   ""
+         BackColor       =   16119285
+         Mascara         =   7
+         MensagemValidacao=   "o CEP"
+         SkinESL         =   -1  'True
       End
       Begin Transportes.SuperText txtCNPJCPF 
          Height          =   285
@@ -92,65 +97,76 @@ Begin VB.Form frmPessoaDados
          TabIndex        =   3
          Top             =   1065
          Width           =   2220
-         _extentx        =   3916
-         _extenty        =   503
-         skinesl         =   -1  'True
-         backcolor       =   16119285
-         mensagemvalidacao=   "CNPJ ou CPF"
-         campoobrigatorio=   -1  'True
+         _ExtentX        =   3916
+         _ExtentY        =   503
+         SkinESL         =   -1  'True
+         BackColor       =   16119285
+         MensagemValidacao=   "CNPJ ou CPF"
+         CampoObrigatorio=   -1  'True
       End
       Begin Transportes.SuperText txtBairro 
-         Height          =   315
+         Height          =   285
          Left            =   4155
          TabIndex        =   5
          Top             =   1050
-         Width           =   4000
-         _extentx        =   7064
-         _extenty        =   556
-         mensagemvalidacao=   "o Bairro"
+         Width           =   4005
+         _ExtentX        =   7064
+         _ExtentY        =   503
+         SkinESL         =   -1  'True
+         BackColor       =   16119285
+         MensagemValidacao=   "o Bairro"
       End
       Begin Transportes.SuperText txtEndereco 
-         Height          =   315
-         Left            =   135
+         Height          =   285
+         Left            =   120
          TabIndex        =   6
          Top             =   1620
          Width           =   4005
-         _extentx        =   7064
-         _extenty        =   556
-         mensagemvalidacao=   "o Endereço"
+         _ExtentX        =   7064
+         _ExtentY        =   503
+         SkinESL         =   -1  'True
+         BackColor       =   16119285
+         MensagemValidacao=   "o Endereço"
       End
       Begin Transportes.SuperText txtPessoa 
-         Height          =   315
+         Height          =   285
          Left            =   120
          TabIndex        =   1
          Top             =   525
-         Width           =   4000
-         _extentx        =   7064
-         _extenty        =   556
-         mensagemvalidacao=   "o Nome"
-         campoobrigatorio=   -1  'True
+         Width           =   4005
+         _ExtentX        =   7064
+         _ExtentY        =   503
+         SkinESL         =   -1  'True
+         BackColor       =   16119285
+         MensagemValidacao=   "o Nome"
+         CampoObrigatorio=   -1  'True
       End
       Begin Transportes.SuperText txtRazaoSocial 
-         Height          =   315
+         Height          =   285
          Left            =   4155
          TabIndex        =   2
          Top             =   525
          Width           =   4005
-         _extentx        =   7064
-         _extenty        =   556
-         mensagemvalidacao=   "a Razão Social"
-         campoobrigatorio=   -1  'True
+         _ExtentX        =   7064
+         _ExtentY        =   503
+         SkinESL         =   -1  'True
+         BackColor       =   16119285
+         MensagemValidacao=   "a Razão Social"
+         CampoObrigatorio=   -1  'True
       End
       Begin Transportes.SuperDBCombo cboCidade 
-         Height          =   510
+         Height          =   480
          Left            =   4155
          TabIndex        =   7
          Top             =   1425
-         Width           =   4000
-         _extentx        =   7064
-         _extenty        =   900
-         mensagemvalidacao=   "a Cidade"
-         label           =   "Cidade"
+         Width           =   4005
+         _ExtentX        =   7064
+         _ExtentY        =   847
+         SkinESL         =   -1  'True
+         BackColor       =   16119285
+         BackColorControl=   16119285
+         MensagemValidacao=   "a Cidade"
+         Label           =   "Cidade"
       End
       Begin Threed.SSCheck chkFuncionario 
          Height          =   150
@@ -274,14 +290,14 @@ Option Explicit
 
 Public id_Pessoa As Long
 Public FormChamador As Form
-Public cPessoa As clsPessoa
+Public mcPessoa As clsPessoa
+Private mstrMensagemretorno As String
 
 Private Sub Form_Load()
 On Error GoTo err_Form_Load
     
     Call FormatarComponentes
-    Call CarregarCampos
-    Call CarregarSpread
+    Call CarregarComponentes
     Call CenterForm(Me)
     
     Exit Sub
@@ -300,14 +316,13 @@ err_FormatarComponentes:
     ShowError
 End Function
 
-Private Function CarregarCampos()
+Private Function CarregarComponentes()
 On Error GoTo err_CarregarCampos
     Dim cPessoaServico As New clsPessoaServico
     
-    Call sprContato.CarregarPorClasse("id_Pessoa = " & cPessoa.id_Pessoa)
-    Set cPessoa = cPessoaServico.CarregarPorID(id_Pessoa)
+    Set cPessoa = cPessoaServico.CarregarPorID(id_Pessoa, True)
             
-    With cPessoa
+    With mcPessoa
         If .id_Pessoa > 0 Then
             mskCEP.Text = .cd_CEP
             txtCNPJCPF.Text = .cd_cnpjcpf
@@ -322,6 +337,8 @@ On Error GoTo err_CarregarCampos
             Call cboCidade.PesquisarCombo(True, .id_Cidade, "", True)
         End If
     End With
+    
+    Call sprContato.CarregarPorClasse("id_Pessoa = " & mcPessoa.id_Pessoa)
     
     Exit Function
 err_CarregarCampos:
@@ -339,6 +356,10 @@ On Error GoTo err_cmdGravar_Click
         Exit Sub
     End If
     
+    If Not CarregarPropriedades() Then
+        Exit Function
+    End If
+    
     Call GravarDados
     
     Call Mensagem("Gravação Efetuada", Informacao)
@@ -353,70 +374,63 @@ End Sub
 Private Function GravarDados()
 On Error GoTo err_GravarDados
 
-    If Not CarregarPropriedades(cPessoa) Then
-        Exit Function
-    End If
-
     Call AbreTransacao
-    If Not cPessoa.Gravar Then
+    If Not mcPessoa.Gravar Then
         Call VoltaTransacao
         Mensagem "Ocorreu um erro no processamento.", ErroCritico
         Exit Function
     End If
     Call FechaTransacao
 
-    id_Pessoa = cPessoa.id_Pessoa
+    id_Pessoa = mcPessoa.id_Pessoa
     
     Call FormChamador.AtualizarDados(id_Pessoa)
     
-    'Call cPessoa.CarregarDados(id_Pessoa)
+    'Call mcPessoa.CarregarDados(id_Pessoa)
     
     Exit Function
 err_GravarDados:
     ShowError
     Call FechaTransacao
 End Function
-Private Function CarregarPropriedades(cPessoa As clsPessoa) As Boolean
+Private Function CarregarPropriedades() As Boolean
 On Error GoTo err_CarregarPropriedades
 
     CarregarPropriedades = False
     
-    cPessoa.id_Pessoa = id_Pessoa
-    cPessoa.cd_CEP = mskCEP.ClipText
-    cPessoa.cd_cnpjcpf = txtCNPJCPF.Text
-    cPessoa.ds_Bairro = txtBairro.Text
-    cPessoa.ds_Endereco = txtEndereco.Text
-    cPessoa.ds_Pessoa = txtPessoa.Text
-    cPessoa.ds_RazaoSocial = txtRazaoSocial.Text
-    cPessoa.id_Cidade = cboCidade.ItemData2
-    cPessoa.tp_Cliente = IIf(chkCliente.Value, "S", "N")
-    cPessoa.tp_Fornecedor = IIf(chkFornecedor.Value, "S", "N")
-    cPessoa.tp_Funcionario = IIf(chkFuncionario.Value, "S", "N")
-
+    With mcPessoa
+        .id_Pessoa = id_Pessoa
+        .cd_CEP = mskCEP.Text
+        .cd_cnpjcpf = txtCNPJCPF.Text
+        .ds_Bairro = txtBairro.Text
+        .ds_Endereco = txtEndereco.Text
+        .ds_Pessoa = txtPessoa.Text
+        .ds_RazaoSocial = txtRazaoSocial.Text
+        .tp_Cliente = IIf(chkCliente, "S", "N")
+        .tp_Fornecedor = IIf(chkFornecedor, "S", "N")
+        .tp_Funcionario = IIf(chkFuncionario, "S", "N")
+        .id_Cidade = cboCidade.ItemData2
+    End With
+    
     CarregarPropriedades = True
     
     Exit Function
 err_CarregarPropriedades:
-    ShowError
+    mstrMensagemretorno = "erro"
 End Function
 
 Private Sub cmdNovo_Click()
     Call LimparControles(Me)
-    Set cPessoa = New clsPessoa
+    Set mcPessoa = Nothing
+    Set mcPessoa = New clsPessoa
     id_Pessoa = 0
 End Sub
 
 Private Sub cmdSair_Click()
     Unload Me
 End Sub
-Public Sub AtualizarDados(id_Pessoa As Long, id_PessoaFuncionario As Long)
-    'id_Pessoa = id_Pessoa
-    'id_PessoaFuncionario = id_PessoaFuncionario
-    cPessoa.CarregarDados (id_Pessoa)
-End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
-    Set cPessoa = Nothing
+    Set mcPessoa = Nothing
     Set Me = Nothing
 End Sub
-
