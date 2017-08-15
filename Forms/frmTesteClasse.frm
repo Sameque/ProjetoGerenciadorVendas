@@ -109,7 +109,7 @@ Private Function TestarClassePessoa(cPessoa As clsPessoa)
     
     Call IniciarClasse(cPessoa)
     If Not cPessoaServico.Salvar(cPessoa) Then
-        MsgGravar = cPessoaServico.mstrMensagemRetorno
+        MsgGravar = cPessoaServico.mstrMensagemretorno
     Else
         ID = cPessoa.id_Pessoa
         MsgGravar = "OK"
@@ -120,7 +120,7 @@ Private Function TestarClassePessoa(cPessoa As clsPessoa)
     cPessoa.StatusGravacao = EnumStatusGravacao.Alterar
     
     If Not cPessoaServico.Salvar(cPessoa) Then
-        MsgAtualizar = cPessoaServico.mstrMensagemRetorno
+        MsgAtualizar = cPessoaServico.mstrMensagemretorno
     Else
         MsgAtualizar = "OK"
     End If
@@ -143,7 +143,7 @@ Private Function TestarClassePessoa(cPessoa As clsPessoa)
     cPessoa.StatusGravacao = EnumStatusGravacao.Excluir
     
     If Not cPessoaServico.Salvar(cPessoa) Then
-        MsgExcluir = cPessoaServico.mstrMensagemRetorno
+        MsgExcluir = cPessoaServico.mstrMensagemretorno
     Else
         MsgExcluir = "OK"
     End If

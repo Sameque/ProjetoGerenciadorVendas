@@ -288,7 +288,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 Option Explicit
 
-Public id_Pessoa As Long
+Public mlngPessoa As Long
 Public FormChamador As Form
 Public mcPessoa As clsPessoa
 Private mstrMensagemretorno As String
@@ -320,7 +320,7 @@ Private Function CarregarComponentes()
 On Error GoTo err_CarregarCampos
     Dim cPessoaServico As New clsPessoaServico
     
-    Set cPessoa = cPessoaServico.CarregarPorID(id_Pessoa, True)
+    Set cPessoa = cPessoaServico.CarregarPorID(mlngPessoa, True)
             
     With mcPessoa
         If .id_Pessoa > 0 Then
@@ -360,6 +360,10 @@ On Error GoTo err_cmdGravar_Click
         Exit Function
     End If
     
+    If Not CarregarContatos() Then
+        Exit Function
+    End If
+    
     Call GravarDados
     
     Call Mensagem("Gravação Efetuada", Informacao)
@@ -371,6 +375,9 @@ err_cmdGravar_Click:
     ShowError
     
 End Sub
+Private Function CarregarContatos()
+    
+End Function
 Private Function GravarDados()
 On Error GoTo err_GravarDados
 
@@ -397,21 +404,21 @@ Private Function CarregarPropriedades() As Boolean
 On Error GoTo err_CarregarPropriedades
 
     CarregarPropriedades = False
-    
-    With mcPessoa
-        .id_Pessoa = id_Pessoa
-        .cd_CEP = mskCEP.Text
-        .cd_cnpjcpf = txtCNPJCPF.Text
-        .ds_Bairro = txtBairro.Text
-        .ds_Endereco = txtEndereco.Text
-        .ds_Pessoa = txtPessoa.Text
-        .ds_RazaoSocial = txtRazaoSocial.Text
-        .tp_Cliente = IIf(chkCliente, "S", "N")
-        .tp_Fornecedor = IIf(chkFornecedor, "S", "N")
-        .tp_Funcionario = IIf(chkFuncionario, "S", "N")
-        .id_Cidade = cboCidade.ItemData2
-    End With
-    
+    If True Then
+        With mcPessoa
+            .id_Pessoa = id_Pessoa
+            .cd_CEP = mskCEP.Text
+            .cd_cnpjcpf = txtCNPJCPF.Text
+            .ds_Bairro = txtBairro.Text
+            .ds_Endereco = txtEndereco.Text
+            .ds_Pessoa = txtPessoa.Text
+            .ds_RazaoSocial = txtRazaoSocial.Text
+            .tp_Cliente = IIf(chkCliente, "S", "N")
+            .tp_Fornecedor = IIf(chkFornecedor, "S", "N")
+            .tp_Funcionario = IIf(chkFuncionario, "S", "N")
+            .id_Cidade = cboCidade.ItemData2
+        End With
+    End If
     CarregarPropriedades = True
     
     Exit Function
