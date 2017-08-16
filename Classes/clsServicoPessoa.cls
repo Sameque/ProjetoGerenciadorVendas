@@ -6,7 +6,7 @@ BEGIN
   DataSourceBehavior  = 0  'vbNone
   MTSTransactionMode  = 0  'NotAnMTSObject
 END
-Attribute VB_Name = "clsPessoaServico"
+Attribute VB_Name = "clsServicoPessoa"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = True
 Attribute VB_PredeclaredId = False
@@ -74,20 +74,20 @@ err_CarregarDados:
     mstrMensagemRetorno = "Erro ao carregar classe."
 End Function
 
-Public Function CarregarPorCNPJCPF(ByVal strCNPJ As String, Optional ByVal blnCarregarFilho = False) As clsPessoa
+Public Function CarregarPorCNPJ(ByVal strCNPJ As String, Optional ByVal blnCarregarFilho = False) As clsPessoa
 On Error GoTo err_CarregarPorCNPJCPF
     
     Dim id_Pessoa As Long
     
     id_Pessoa = RetornaIDPorCNPJ(strCNPJ)
     
-    Set CarregarPorCNPJCPF = CarregarPorID(id_Pessoa, blnCarregarFilho)
+    Set CarregarPorCNPJ = CarregarPorID(id_Pessoa, blnCarregarFilho)
     
     mstrMensagemRetorno = ""
 
     Exit Function
 err_CarregarPorCNPJCPF:
-    mstrMensagemRetorno "Erro ao carregar por CNPJ"
+    mstrMensagemRetorno = "Erro ao carregar por CNPJ"
 End Function
 
 Private Function RetornaIDPorCNPJ(ByVal strCNPJ As String) As Long
@@ -97,7 +97,7 @@ On Error GoTo err_RetornaIDPorCNPJ
     
     RetornaIDPorCNPJ = 0
     
-    If Trim(cd_CNPJCPFPesquisar) <> "" Then
+    If Trim(strCNPJ) <> "" Then
         Call Select_Table(True, "tbdPessoa", "id_Pessoa", "cd_CNPJCPF = '" & strCNPJ & "'", , , , , rsado)
         RetornaIDPorCNPJ = ReadField(rsado, "id_Pessoa")
         rsado.Close
@@ -184,6 +184,7 @@ On erro GoTo err_SalvarContato
 
     For Each cPessoaContato In cPessoa.GetListaContatos
         With cPessoaContato
+            .id_Pessoa = cPessoa.id_Pessoa
             Call cServicoBase.SetarTabela(.Tabela, .ChavePrimaria, .id, True, True)
             Call cServicoBase.SetarCampos(.Campos, .Conteudo, .menumStatusGravacao)
             
@@ -270,7 +271,7 @@ End Function
 '    mstrMensagemRetorno = "Erro ao gravar contato."
 'End Function
 
-Private Function Excluir(ByRef cPessoa As clsPessoa) As Boolean
+Public Function Excluir(ByRef cPessoa As clsPessoa) As Boolean
 On Error GoTo err_Excluir
     Dim cServicoBase As New clsServicoBase
     Dim str As String

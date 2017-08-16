@@ -1,9 +1,9 @@
 [ISL]
 Cliente=999
 [DataBase]
-Path=192.168.2.5,1433
+Path=192.168.56.1
 Type=2
 [SISLOG]
-DataBase=dtbTransporte
-PW=докн░
-Databasepwd=9
+DataBase=ProjetoFinal
+PW=докн░вwqА
+Databasepwd=1

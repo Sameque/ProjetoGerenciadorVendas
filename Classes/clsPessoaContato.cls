@@ -13,14 +13,31 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 Option Explicit
 
-Public ID                       As Long
+Public id                       As Long
 Public id_Pessoa                As Long
 Public ds_Nome                  As String
 Public cd_Fone                  As String
 Public cd_Email                 As String
 
-Public StatusGravacao           As EnumStatusGravacao
-Public strMensagemRetorno       As String
+Public menumStatusGravacao           As enumStatusGravacao
+Public mstrMensagemRetorno       As String
+
+Private Sub Class_Initialize()
+On Error GoTo err_Class_Initialize
+    
+    id = 0
+    id_Pessoa = 0
+    ds_Nome = ""
+    cd_Fone = ""
+    cd_Email = ""
+        
+    menumStatusGravacao = enumStatusGravacao.Nenhum
+    mstrMensagemRetorno = ""
+    
+    Exit Sub
+err_Class_Initialize:
+    mstrMensagemRetorno = "Erro ao inicializar classe."
+End Sub
 
 Public Function Tabela() As String
     Tabela = "tbdPessoaContato"
@@ -37,19 +54,3 @@ Public Function Conteudo()
     Conteudo = Array(id_Pessoa, ds_Nome, cd_Fone, cd_Email)
 End Function
 
-Private Sub Class_Initialize()
-On Error GoTo err_Class_Initialize
-    
-    ID = 0
-    id_Pessoa = 0
-    ds_Nome = ""
-    cd_Fone = ""
-    cd_Email = ""
-        
-    StatusGravacao = EnumStatusGravacao.Nenhum
-    strMensagemRetorno = ""
-    
-    Exit Sub
-err_Class_Initialize:
-    strMensagemRetorno = "Erro ao inicializar classe."
-End Sub

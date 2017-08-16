@@ -388,8 +388,9 @@ End Function
 
 Private Sub cmdIncluir_Click()
     Set frmPessoaDados.FormChamador = Me
-    frmPessoaDados.id_Pessoa = 0
+    frmPessoaDados.mlngPessoa = 0
     frmPessoaDados.Show vbModal
+    Set frmPessoaDados = Nothing
 End Sub
 
 Private Sub cmdAlterar_Click()
@@ -398,7 +399,7 @@ On Error GoTo err_cmdAlterar_Click
     sprPessoa.Row = sprPessoa.ActiveRow
     If sprPessoa.RowHidden = False And Val(sprPessoa.SpreadEventoName("id_Pessoa")) > 0 Then
         Set frmPessoaDados.FormChamador = Me
-        frmPessoaDados.id_Pessoa = sprPessoa.SpreadEventoName("id_Pessoa")
+        frmPessoaDados.mlngPessoa = sprPessoa.SpreadEventoName("id_Pessoa")
         frmPessoaDados.Show vbModal
     End If
     

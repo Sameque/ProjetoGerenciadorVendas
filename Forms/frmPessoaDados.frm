@@ -12,18 +12,26 @@ Begin VB.Form frmPessoaDados
    MinButton       =   0   'False
    ScaleHeight     =   5310
    ScaleWidth      =   8430
+   Begin VB.CommandButton cmdExcluir 
+      Caption         =   "Excluir"
+      Height          =   750
+      Left            =   4920
+      TabIndex        =   21
+      Top             =   4425
+      Width           =   810
+   End
    Begin Transportes.SuperSpreadNovo sprContato 
       Height          =   1695
       Left            =   60
       TabIndex        =   20
       Top             =   2550
       Width           =   8340
-      _ExtentX        =   14711
-      _ExtentY        =   2990
-      BackColorCellAtiva=   14733514
-      GrayAreaBackColor=   14670555
-      SkinESL         =   -1  'True
-      Label           =   "Contatos"
+      _extentx        =   14711
+      _extenty        =   2990
+      backcolorcellativa=   14733514
+      grayareabackcolor=   14670555
+      label           =   "Contatos"
+      skinesl         =   -1  'True
    End
    Begin VB.CommandButton cmdNovo 
       Caption         =   "&Novo"
@@ -83,13 +91,13 @@ Begin VB.Form frmPessoaDados
          TabIndex        =   4
          Top             =   1065
          Width           =   1740
-         _ExtentX        =   3069
-         _ExtentY        =   503
-         ToolTip         =   ""
-         BackColor       =   16119285
-         Mascara         =   7
-         MensagemValidacao=   "o CEP"
-         SkinESL         =   -1  'True
+         _extentx        =   3069
+         _extenty        =   503
+         skinesl         =   -1  'True
+         backcolor       =   16119285
+         tooltip         =   ""
+         mascara         =   7
+         mensagemvalidacao=   "o CEP"
       End
       Begin Transportes.SuperText txtCNPJCPF 
          Height          =   285
@@ -97,12 +105,12 @@ Begin VB.Form frmPessoaDados
          TabIndex        =   3
          Top             =   1065
          Width           =   2220
-         _ExtentX        =   3916
-         _ExtentY        =   503
-         SkinESL         =   -1  'True
-         BackColor       =   16119285
-         MensagemValidacao=   "CNPJ ou CPF"
-         CampoObrigatorio=   -1  'True
+         _extentx        =   3916
+         _extenty        =   503
+         skinesl         =   -1  'True
+         backcolor       =   16119285
+         mensagemvalidacao=   "CNPJ ou CPF"
+         campoobrigatorio=   -1  'True
       End
       Begin Transportes.SuperText txtBairro 
          Height          =   285
@@ -110,11 +118,11 @@ Begin VB.Form frmPessoaDados
          TabIndex        =   5
          Top             =   1050
          Width           =   4005
-         _ExtentX        =   7064
-         _ExtentY        =   503
-         SkinESL         =   -1  'True
-         BackColor       =   16119285
-         MensagemValidacao=   "o Bairro"
+         _extentx        =   7064
+         _extenty        =   503
+         skinesl         =   -1  'True
+         backcolor       =   16119285
+         mensagemvalidacao=   "o Bairro"
       End
       Begin Transportes.SuperText txtEndereco 
          Height          =   285
@@ -122,11 +130,11 @@ Begin VB.Form frmPessoaDados
          TabIndex        =   6
          Top             =   1620
          Width           =   4005
-         _ExtentX        =   7064
-         _ExtentY        =   503
-         SkinESL         =   -1  'True
-         BackColor       =   16119285
-         MensagemValidacao=   "o Endereço"
+         _extentx        =   7064
+         _extenty        =   503
+         skinesl         =   -1  'True
+         backcolor       =   16119285
+         mensagemvalidacao=   "o Endereço"
       End
       Begin Transportes.SuperText txtPessoa 
          Height          =   285
@@ -134,12 +142,12 @@ Begin VB.Form frmPessoaDados
          TabIndex        =   1
          Top             =   525
          Width           =   4005
-         _ExtentX        =   7064
-         _ExtentY        =   503
-         SkinESL         =   -1  'True
-         BackColor       =   16119285
-         MensagemValidacao=   "o Nome"
-         CampoObrigatorio=   -1  'True
+         _extentx        =   7064
+         _extenty        =   503
+         skinesl         =   -1  'True
+         backcolor       =   16119285
+         mensagemvalidacao=   "o Nome"
+         campoobrigatorio=   -1  'True
       End
       Begin Transportes.SuperText txtRazaoSocial 
          Height          =   285
@@ -147,12 +155,12 @@ Begin VB.Form frmPessoaDados
          TabIndex        =   2
          Top             =   525
          Width           =   4005
-         _ExtentX        =   7064
-         _ExtentY        =   503
-         SkinESL         =   -1  'True
-         BackColor       =   16119285
-         MensagemValidacao=   "a Razão Social"
-         CampoObrigatorio=   -1  'True
+         _extentx        =   7064
+         _extenty        =   503
+         skinesl         =   -1  'True
+         backcolor       =   16119285
+         mensagemvalidacao=   "a Razão Social"
+         campoobrigatorio=   -1  'True
       End
       Begin Transportes.SuperDBCombo cboCidade 
          Height          =   480
@@ -160,13 +168,13 @@ Begin VB.Form frmPessoaDados
          TabIndex        =   7
          Top             =   1425
          Width           =   4005
-         _ExtentX        =   7064
-         _ExtentY        =   847
-         SkinESL         =   -1  'True
-         BackColor       =   16119285
-         BackColorControl=   16119285
-         MensagemValidacao=   "a Cidade"
-         Label           =   "Cidade"
+         _extentx        =   7064
+         _extenty        =   847
+         skinesl         =   -1  'True
+         mensagemvalidacao=   "a Cidade"
+         backcolor       =   16119285
+         backcolorcontrol=   16119285
+         label           =   "Cidade"
       End
       Begin Threed.SSCheck chkFuncionario 
          Height          =   150
@@ -290,38 +298,93 @@ Option Explicit
 
 Public mlngPessoa As Long
 Public FormChamador As Form
-Public mcPessoa As clsPessoa
-Private mstrMensagemretorno As String
+Public mcPessoa As New clsPessoa
+Private mstrMensagemRetorno As String
+
+Private Sub cmdExcluir_Click()
+    Call Excluir
+End Sub
 
 Private Sub Form_Load()
 On Error GoTo err_Form_Load
     
     Call FormatarComponentes
-    Call CarregarComponentes
+    Call CarregarComponentes(mlngPessoa)
     Call CenterForm(Me)
     
     Exit Sub
 err_Form_Load:
     ShowError
 End Sub
-Private Function FormatarComponentes()
-On Error GoTo err_FormatarComponentes
-    Dim cPessoaServico As New clsPessoaServico
-            
-    Call cboCidade.Formatar("a.id_Cidade, a.ds_Cidade, b.ds_Estado", "0,3000,1000", "false,true,true", "tbdCidade a left join tbdEstado b on a.id_Estado = b.id_Estado", "", "ds_Cidade")
-    Call sprContato.FormatarPorClasse(cPessoaServico.FormatarSpreadPessoaContato)
-    
-    Exit Function
-err_FormatarComponentes:
-    ShowError
-End Function
 
-Private Function CarregarComponentes()
-On Error GoTo err_CarregarCampos
-    Dim cPessoaServico As New clsPessoaServico
+Private Sub cmdGravar_Click()
+On Error GoTo err_cmdGravar_Click
+
+    If Not ValidarControles(Me) Then
+        Exit Sub
+    End If
     
-    Set cPessoa = cPessoaServico.CarregarPorID(mlngPessoa, True)
-            
+    If Mensagem("Confirma Gravação?", Pergunta) = vbNo Then
+        Exit Sub
+    End If
+    
+    If Not CarregarPropriedadesPessoa() Then
+        Mensagem mstrMensagemRetorno, erro
+        Exit Sub
+    End If
+    
+    If Not CarregarPropriedadesContatos() Then
+        Mensagem mstrMensagemRetorno, erro
+        Exit Sub
+    End If
+    
+    If Not GravarDados Then
+        Mensagem mstrMensagemRetorno, erro
+        Exit Sub
+    End If
+    
+    Call sprContato.AtualizarStatus(mcPessoa.GetListaContatos)
+    
+    Call Mensagem("Gravação Efetuada", Informacao)
+    
+    cmdNovo.SetFocus
+
+    Exit Sub
+err_cmdGravar_Click:
+    ShowError
+    
+End Sub
+
+Private Sub cmdNovo_Click()
+    Call LimparControles(Me)
+    Set mcPessoa = Nothing
+    mlngPessoa = 0
+End Sub
+
+Private Sub cmdSair_Click()
+    Unload Me
+End Sub
+
+Private Sub txtCNPJCPF_LostFocus()
+    Call CarregarPorCNPJ
+End Sub
+
+Private Function CarregarComponentes(ByVal lngPesquisa As Long, Optional ByVal strCNPJ As String = "")
+On Error GoTo err_CarregarCampos
+    Dim cPessoaServico As New clsServicoPessoa
+        
+    If strCNPJ <> "" Then
+        Set mcPessoa = cPessoaServico.CarregarPorCNPJ(strCNPJ, True)
+    Else
+        Set mcPessoa = cPessoaServico.CarregarPorID(lngPesquisa, True)
+    End If
+    
+    If mcPessoa.id_Pessoa <= 0 Then
+        Exit Function
+    End If
+
+    Call LimparControles(Me)
+    
     With mcPessoa
         If .id_Pessoa > 0 Then
             mskCEP.Text = .cd_CEP
@@ -345,68 +408,63 @@ err_CarregarCampos:
     ShowError
 End Function
 
-Private Sub cmdGravar_Click()
-On Error GoTo err_cmdGravar_Click
+Private Function CarregarPropriedadesContatos() As Boolean
+On Error GoTo err_CarregarContatos
+    Dim i As Long
+    
+    CarregarPropriedadesContatos = False
+    Call mcPessoa.ZerarListas
 
-    If Not ValidarControles(Me) Then
-        Exit Sub
-    End If
+    For i = 1 To sprContato.MaxRows - 1
+        sprContato.Row = i
+                
+        If sprContato.StatusGravacao(i) <> const_Inicial Then
+            Call mcPessoa.AdicionarContato( _
+                    sprContato.SpreadEventoName("id_PessoaContato") _
+                    , sprContato.SpreadEventoName("ds_Nome") _
+                    , sprContato.SpreadEventoName("cd_Fone") _
+                    , sprContato.SpreadEventoName("cd_Email") _
+                    , sprContato.StatusGravacao(i))
+        End If
+    Next i
     
-    If Mensagem("Confirma Gravação?", Pergunta) = vbNo Then
-        Exit Sub
-    End If
+    CarregarPropriedadesContatos = True
     
-    If Not CarregarPropriedades() Then
-        Exit Function
-    End If
-    
-    If Not CarregarContatos() Then
-        Exit Function
-    End If
-    
-    Call GravarDados
-    
-    Call Mensagem("Gravação Efetuada", Informacao)
-    
-    cmdNovo.SetFocus
-
-    Exit Sub
-err_cmdGravar_Click:
-    ShowError
-    
-End Sub
-Private Function CarregarContatos()
-    
+    Exit Function
+err_CarregarContatos:
+    mstrMensagemRetorno = "Erro ao carregar contato."
 End Function
-Private Function GravarDados()
+Private Function GravarDados() As Boolean
 On Error GoTo err_GravarDados
-
+    Dim cServicoPessoa As New clsServicoPessoa
+    
+    GravarDados = False
+    
     Call AbreTransacao
-    If Not mcPessoa.Gravar Then
+    If Not cServicoPessoa.Salvar(mcPessoa) Then
         Call VoltaTransacao
-        Mensagem "Ocorreu um erro no processamento.", ErroCritico
+        Mensagem cServicoPessoa.mstrMensagemRetorno, erro
         Exit Function
     End If
     Call FechaTransacao
-
-    id_Pessoa = mcPessoa.id_Pessoa
     
-    Call FormChamador.AtualizarDados(id_Pessoa)
+    mlngPessoa = mcPessoa.id_Pessoa
     
-    'Call mcPessoa.CarregarDados(id_Pessoa)
+    GravarDados = True
+    Set cServicoPessoa = Nothing
     
     Exit Function
 err_GravarDados:
     ShowError
     Call FechaTransacao
 End Function
-Private Function CarregarPropriedades() As Boolean
+Private Function CarregarPropriedadesPessoa() As Boolean
 On Error GoTo err_CarregarPropriedades
 
-    CarregarPropriedades = False
+    CarregarPropriedadesPessoa = False
     If True Then
         With mcPessoa
-            .id_Pessoa = id_Pessoa
+            .id_Pessoa = mlngPessoa
             .cd_CEP = mskCEP.Text
             .cd_cnpjcpf = txtCNPJCPF.Text
             .ds_Bairro = txtBairro.Text
@@ -417,27 +475,45 @@ On Error GoTo err_CarregarPropriedades
             .tp_Fornecedor = IIf(chkFornecedor, "S", "N")
             .tp_Funcionario = IIf(chkFuncionario, "S", "N")
             .id_Cidade = cboCidade.ItemData2
+            .menumStatusGravacao = enumStatusGravacao.IncluirOuAlterar
         End With
     End If
-    CarregarPropriedades = True
+    CarregarPropriedadesPessoa = True
     
     Exit Function
 err_CarregarPropriedades:
-    mstrMensagemretorno = "erro"
+    mstrMensagemRetorno = "Erro ao carregar propriedades."
 End Function
+Private Function CarregarPorCNPJ()
+On Error GoTo err_CarregarPorCNPJ
 
-Private Sub cmdNovo_Click()
-    Call LimparControles(Me)
-    Set mcPessoa = Nothing
-    Set mcPessoa = New clsPessoa
-    id_Pessoa = 0
-End Sub
-
-Private Sub cmdSair_Click()
-    Unload Me
-End Sub
-
+    If txtCNPJCPF.Text <> "" Then
+        Call CarregarComponentes(mlngPessoa, txtCNPJCPF.Text)
+    End If
+    
+    Exit Function
+err_CarregarPorCNPJ:
+    ShowError
+End Function
+Private Function Excluir()
+On Error GoTo err_Excluir
+    
+    
+    Exit Function
+err_Excluir:
+    ShowError
+End Function
+Private Function FormatarComponentes()
+On Error GoTo err_FormatarComponentes
+    Dim cPessoaServico As New clsServicoPessoa
+            
+    Call cboCidade.Formatar("a.id_Cidade, a.ds_Cidade, b.ds_Estado", "0,3000,1000", "false,true,true", "tbdCidade a left join tbdEstado b on a.id_Estado = b.id_Estado", "", "ds_Cidade")
+    Call sprContato.FormatarPorClasse(cPessoaServico.FormatarSpreadPessoaContato)
+    
+    Exit Function
+err_FormatarComponentes:
+    ShowError
+End Function
 Private Sub Form_Unload(Cancel As Integer)
     Set mcPessoa = Nothing
-    Set Me = Nothing
 End Sub
