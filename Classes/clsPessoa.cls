@@ -73,7 +73,7 @@ err_AdicionarContato:
     mstrMensagemRetorno = "Erro ao adicionar contato."
 End Function
 Public Sub ZerarListas()
-    Set colPessoaContato = New Collection
+    Set mcolPessoaContato = New Collection
 End Sub
 
 Public Property Get GetListaContatos() As Collection

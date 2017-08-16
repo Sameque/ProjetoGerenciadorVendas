@@ -195,7 +195,6 @@ On erro GoTo err_SalvarContato
             
             .id = cServicoBase.ValorChavePrimaria
             SalvarContato = True
-            
         End With
     Next
     
@@ -236,40 +235,6 @@ On Error GoTo err_Gravar
 err_Gravar:
     mstrMensagemRetorno = "Erro no processo de gravação."
 End Function
-
-'Private Function GravarContato(ByRef cPessoa As clsPessoa) As Boolean
-'On Error GoTo err_GravarContato
-'    Dim cPessoaContato  As clsPessoaContato
-'    Dim cServicoBase As New clsServicoBase
-'
-'    GravarContato = False
-'
-'    For Each cPessoaContato In cPessoa.colPessoaContato
-'        With cPessoaContato
-'            .id_Pessoa = cPessoa.id_Pessoa
-'            Call cServicoBase.SetarTabela("tbdPessoaContato", "id_PessoaContato", .id_PessoaContato, False, True)
-'            Call cServicoBase.SetarCampos(.Campos, .Conteudo, .StatusGravacao)
-'        End With
-'
-'        If Not cServicoBase.Salvar Then
-'            mstrMensagemRetorno = cServicoBase.MensagemRetorno
-'            Exit Function
-'        End If
-'
-'        cPessoaContato.id_PessoaContato = cServicoBase.ValorChavePrimaria
-'
-'    Next
-'
-'    GravarContato = True
-'
-'    Set cPessoaContato = Nothing
-'    Set cServicoBase = Nothing
-'    mstrMensagemRetorno = ""
-'
-'    Exit Function
-'err_GravarContato:
-'    mstrMensagemRetorno = "Erro ao gravar contato."
-'End Function
 
 Public Function Excluir(ByRef cPessoa As clsPessoa) As Boolean
 On Error GoTo err_Excluir

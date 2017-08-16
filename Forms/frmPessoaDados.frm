@@ -26,12 +26,12 @@ Begin VB.Form frmPessoaDados
       TabIndex        =   20
       Top             =   2550
       Width           =   8340
-      _extentx        =   14711
-      _extenty        =   2990
-      backcolorcellativa=   14733514
-      grayareabackcolor=   14670555
-      label           =   "Contatos"
-      skinesl         =   -1  'True
+      _ExtentX        =   14711
+      _ExtentY        =   2990
+      BackColorCellAtiva=   14733514
+      GrayAreaBackColor=   14670555
+      SkinESL         =   -1  'True
+      Label           =   "Contatos"
    End
    Begin VB.CommandButton cmdNovo 
       Caption         =   "&Novo"
@@ -91,13 +91,13 @@ Begin VB.Form frmPessoaDados
          TabIndex        =   4
          Top             =   1065
          Width           =   1740
-         _extentx        =   3069
-         _extenty        =   503
-         skinesl         =   -1  'True
-         backcolor       =   16119285
-         tooltip         =   ""
-         mascara         =   7
-         mensagemvalidacao=   "o CEP"
+         _ExtentX        =   3069
+         _ExtentY        =   503
+         ToolTip         =   ""
+         BackColor       =   16119285
+         Mascara         =   7
+         MensagemValidacao=   "o CEP"
+         SkinESL         =   -1  'True
       End
       Begin Transportes.SuperText txtCNPJCPF 
          Height          =   285
@@ -105,12 +105,12 @@ Begin VB.Form frmPessoaDados
          TabIndex        =   3
          Top             =   1065
          Width           =   2220
-         _extentx        =   3916
-         _extenty        =   503
-         skinesl         =   -1  'True
-         backcolor       =   16119285
-         mensagemvalidacao=   "CNPJ ou CPF"
-         campoobrigatorio=   -1  'True
+         _ExtentX        =   3916
+         _ExtentY        =   503
+         SkinESL         =   -1  'True
+         BackColor       =   16119285
+         MensagemValidacao=   "CNPJ ou CPF"
+         CampoObrigatorio=   -1  'True
       End
       Begin Transportes.SuperText txtBairro 
          Height          =   285
@@ -118,11 +118,11 @@ Begin VB.Form frmPessoaDados
          TabIndex        =   5
          Top             =   1050
          Width           =   4005
-         _extentx        =   7064
-         _extenty        =   503
-         skinesl         =   -1  'True
-         backcolor       =   16119285
-         mensagemvalidacao=   "o Bairro"
+         _ExtentX        =   7064
+         _ExtentY        =   503
+         SkinESL         =   -1  'True
+         BackColor       =   16119285
+         MensagemValidacao=   "o Bairro"
       End
       Begin Transportes.SuperText txtEndereco 
          Height          =   285
@@ -130,11 +130,11 @@ Begin VB.Form frmPessoaDados
          TabIndex        =   6
          Top             =   1620
          Width           =   4005
-         _extentx        =   7064
-         _extenty        =   503
-         skinesl         =   -1  'True
-         backcolor       =   16119285
-         mensagemvalidacao=   "o Endereço"
+         _ExtentX        =   7064
+         _ExtentY        =   503
+         SkinESL         =   -1  'True
+         BackColor       =   16119285
+         MensagemValidacao=   "o Endereço"
       End
       Begin Transportes.SuperText txtPessoa 
          Height          =   285
@@ -142,12 +142,12 @@ Begin VB.Form frmPessoaDados
          TabIndex        =   1
          Top             =   525
          Width           =   4005
-         _extentx        =   7064
-         _extenty        =   503
-         skinesl         =   -1  'True
-         backcolor       =   16119285
-         mensagemvalidacao=   "o Nome"
-         campoobrigatorio=   -1  'True
+         _ExtentX        =   7064
+         _ExtentY        =   503
+         SkinESL         =   -1  'True
+         BackColor       =   16119285
+         MensagemValidacao=   "o Nome"
+         CampoObrigatorio=   -1  'True
       End
       Begin Transportes.SuperText txtRazaoSocial 
          Height          =   285
@@ -155,12 +155,12 @@ Begin VB.Form frmPessoaDados
          TabIndex        =   2
          Top             =   525
          Width           =   4005
-         _extentx        =   7064
-         _extenty        =   503
-         skinesl         =   -1  'True
-         backcolor       =   16119285
-         mensagemvalidacao=   "a Razão Social"
-         campoobrigatorio=   -1  'True
+         _ExtentX        =   7064
+         _ExtentY        =   503
+         SkinESL         =   -1  'True
+         BackColor       =   16119285
+         MensagemValidacao=   "a Razão Social"
+         CampoObrigatorio=   -1  'True
       End
       Begin Transportes.SuperDBCombo cboCidade 
          Height          =   480
@@ -168,13 +168,13 @@ Begin VB.Form frmPessoaDados
          TabIndex        =   7
          Top             =   1425
          Width           =   4005
-         _extentx        =   7064
-         _extenty        =   847
-         skinesl         =   -1  'True
-         mensagemvalidacao=   "a Cidade"
-         backcolor       =   16119285
-         backcolorcontrol=   16119285
-         label           =   "Cidade"
+         _ExtentX        =   7064
+         _ExtentY        =   847
+         SkinESL         =   -1  'True
+         BackColor       =   16119285
+         BackColorControl=   16119285
+         MensagemValidacao=   "a Cidade"
+         Label           =   "Cidade"
       End
       Begin Threed.SSCheck chkFuncionario 
          Height          =   150
@@ -371,12 +371,12 @@ End Sub
 
 Private Function CarregarComponentes(ByVal lngPesquisa As Long, Optional ByVal strCNPJ As String = "")
 On Error GoTo err_CarregarCampos
-    Dim cPessoaServico As New clsServicoPessoa
+    Dim cServicoPessoa As New clsServicoPessoa
         
     If strCNPJ <> "" Then
-        Set mcPessoa = cPessoaServico.CarregarPorCNPJ(strCNPJ, True)
+        Set mcPessoa = cServicoPessoa.CarregarPorCNPJ(strCNPJ, True)
     Else
-        Set mcPessoa = cPessoaServico.CarregarPorID(lngPesquisa, True)
+        Set mcPessoa = cServicoPessoa.CarregarPorID(lngPesquisa, True)
     End If
     
     If mcPessoa.id_Pessoa <= 0 Then
@@ -495,9 +495,24 @@ On Error GoTo err_CarregarPorCNPJ
 err_CarregarPorCNPJ:
     ShowError
 End Function
-Private Function Excluir()
+Private Function Excluir() As Boolean
 On Error GoTo err_Excluir
+    Dim cServicoPessoa As New clsServicoPessoa
     
+    Excluir = False
+    
+    Call AbreTransacao
+    If Not cServicoPessoa.Excluir(mcPessoa) Then
+        Call VoltaTransacao
+        Mensagem cServicoPessoa.mstrMensagemRetorno, erro
+        Exit Function
+    End If
+    Call FechaTransacao
+    
+    Call LimparControles(Me)
+    Excluir = True
+    Set cServicoPessoa = Nothing
+    Set mcPessoa = Nothing
     
     Exit Function
 err_Excluir:
@@ -505,10 +520,10 @@ err_Excluir:
 End Function
 Private Function FormatarComponentes()
 On Error GoTo err_FormatarComponentes
-    Dim cPessoaServico As New clsServicoPessoa
+    Dim cServicoPessoa As New clsServicoPessoa
             
     Call cboCidade.Formatar("a.id_Cidade, a.ds_Cidade, b.ds_Estado", "0,3000,1000", "false,true,true", "tbdCidade a left join tbdEstado b on a.id_Estado = b.id_Estado", "", "ds_Cidade")
-    Call sprContato.FormatarPorClasse(cPessoaServico.FormatarSpreadPessoaContato)
+    Call sprContato.FormatarPorClasse(cServicoPessoa.FormatarSpreadPessoaContato)
     
     Exit Function
 err_FormatarComponentes:

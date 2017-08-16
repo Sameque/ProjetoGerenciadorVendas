@@ -411,8 +411,9 @@ End Sub
 Private Sub cmdExcluir_Click()
 On Error GoTo err_cmdExcluir_Click
 
-    Dim cPessoa As New clsPessoa
-
+    Dim cServicoPessoa As New clsServicoPessoa
+    Dim cPessoa As clsPessoa
+    
     If sprPessoa.ActiveRow < 1 Then
         Mensagem "Selecione o item que será excluído.", erro
         Exit Sub
@@ -422,15 +423,14 @@ On Error GoTo err_cmdExcluir_Click
         Exit Sub
     End If
     
-    Call cPessoa.CarregarDados(sprPessoa.SpreadEventoName("id_Pessoa"))
+    Set cPessoa = cServicoPessoa.CarregarPorID(sprPessoa.SpreadEventoName("id_Pessoa"))
     
     Call AbreTransacao
-    If Not cPessoa.Excluir Then
+    If Not cServicoPessoa.Excluir(cPessoa) Then
         Call VoltaTransacao
         Mensagem "Ocorreu um erro na exclusão.", ErroCritico
         Exit Sub
     End If
-    
     Call FechaTransacao
 
     sprPessoa.Action = 5
