@@ -301,6 +301,10 @@ Public FormChamador As Form
 Public mcPessoa As New clsPessoa
 Private mstrMensagemRetorno As String
 
+Private Sub cboCidade_Change()
+
+End Sub
+
 Private Sub cmdExcluir_Click()
     Call Excluir
 End Sub
@@ -320,7 +324,7 @@ End Sub
 Private Sub cmdGravar_Click()
 On Error GoTo err_cmdGravar_Click
 
-    If Not ValidarControles(Me) Then
+    If Not ValidarControlesNovo(Me) Then
         Exit Sub
     End If
     
@@ -475,7 +479,7 @@ On Error GoTo err_CarregarPropriedades
             .tp_Fornecedor = IIf(chkFornecedor, "S", "N")
             .tp_Funcionario = IIf(chkFuncionario, "S", "N")
             .id_Cidade = cboCidade.ItemData2
-            .menumStatusGravacao = enumStatusGravacao.IncluirOuAlterar
+            .menumStatusGravacao = EnumStatusGravacao.IncluirOuAlterar
         End With
     End If
     CarregarPropriedadesPessoa = True

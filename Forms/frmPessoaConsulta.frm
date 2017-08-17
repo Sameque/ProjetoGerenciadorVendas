@@ -100,9 +100,9 @@ Begin VB.Form frmPessoaConsulta
          TabIndex        =   3
          Top             =   285
          Width           =   2055
-         _ExtentX        =   3625
-         _ExtentY        =   900
-         Label           =   "Estado"
+         _extentx        =   3625
+         _extenty        =   900
+         label           =   "Estado"
       End
       Begin Threed.SSCheck chkFuncionario 
          Height          =   150
@@ -117,7 +117,7 @@ Begin VB.Form frmPessoaConsulta
          Caption         =   "Funcionário"
          BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
             Name            =   "MS Sans Serif"
-            Size            =   8.25
+            Size            =   8.26
             Charset         =   0
             Weight          =   400
             Underline       =   0   'False
@@ -131,12 +131,12 @@ Begin VB.Form frmPessoaConsulta
          TabIndex        =   1
          Top             =   285
          Width           =   5190
-         _ExtentX        =   9155
-         _ExtentY        =   900
-         CampoPesquisa2Width=   1500
-         CampoPesquisa2Coluna=   2
-         Label           =   "Nome"
-         LabelCampoPesquisa2=   "CNPJ/CPF"
+         _extentx        =   9155
+         _extenty        =   900
+         campopesquisa2width=   1500
+         campopesquisa2coluna=   2
+         label           =   "Nome"
+         labelcampopesquisa2=   "CNPJ/CPF"
       End
       Begin Threed.SSCheck chkFornecedor 
          Height          =   150
@@ -151,7 +151,7 @@ Begin VB.Form frmPessoaConsulta
          Caption         =   "Fornecedor"
          BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
             Name            =   "MS Sans Serif"
-            Size            =   8.25
+            Size            =   8.26
             Charset         =   0
             Weight          =   400
             Underline       =   0   'False
@@ -172,7 +172,7 @@ Begin VB.Form frmPessoaConsulta
          Caption         =   "Cliente"
          BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
             Name            =   "MS Sans Serif"
-            Size            =   8.25
+            Size            =   8.26
             Charset         =   0
             Weight          =   400
             Underline       =   0   'False
@@ -186,9 +186,9 @@ Begin VB.Form frmPessoaConsulta
          TabIndex        =   2
          Top             =   285
          Width           =   4005
-         _ExtentX        =   7064
-         _ExtentY        =   900
-         Label           =   "Cidade"
+         _extentx        =   7064
+         _extenty        =   900
+         label           =   "Cidade"
       End
    End
    Begin Transportes.SuperSpreadNovo sprPessoa 
@@ -197,8 +197,8 @@ Begin VB.Form frmPessoaConsulta
       TabIndex        =   0
       Top             =   1365
       Width           =   12585
-      _ExtentX        =   22199
-      _ExtentY        =   8678
+      _extentx        =   22199
+      _extenty        =   8678
    End
    Begin Crystal.CrystalReport cryRelatorio 
       Left            =   240
@@ -221,51 +221,27 @@ Option Explicit
 
 Dim sTabela As String
 Dim sCampos As String
+Dim sWhere As String
+
 
 Private Sub Form_Activate()
     frmMDI.Arrange vbCascade
 End Sub
 
 Private Sub Form_Load()
-On Error GoTo err_FormLoad
-
     Call IniciarComponentes
-    Call CarregarComponentes
-
-    Exit Sub
-err_FormLoad:
-    ShowError
-End Sub
-
-Private Sub Form_Unload(Cancel As Integer)
-    Set frmPessoaConsulta = Nothing
 End Sub
 
 Private Function IniciarComponentes()
-
-
+On Error GoTo err_IniciarComponentes
+    Dim cServicoPessoa As New clsServicoPessoa
+   
     Call cboCidade.Formatar("a.id_Cidade, a.ds_Cidade, b.ds_Estado", "0,3000,1000", "false,true,true", "tbdCidade a left join tbdEstado b on a.id_Estado = b.id_Estado", "", "ds_Cidade")
     Call cboPessoa.Formatar("id_Pessoa, ds_Pessoa, cd_cnpjcpf", "0, 3000, 1000", "false, true, true", "tbdPessoa", "", "ds_Pessoa", 2, 1500)
     Call cboEstado.Formatar("id_Estado, ds_Estado, cd_Estado", "0, 500, 500", "false, true, true", "tbdEstado", "", "ds_Estado")
     
-    Call sprPessoa.NovaColunaSpread(eslNumero, True, True, "id_Pessoa", "id_Pessoa", 0, 0)
-    Call sprPessoa.NovaColunaSpread(eslTexto, True, True, "cd_cnpjcpf", "CNPJ/CPF", 14, 14, , "", True)
-    Call sprPessoa.NovaColunaSpread(eslTexto, True, True, "ds_Pessoa", "Nome", 30, 255)
-    Call sprPessoa.NovaColunaSpread(eslTexto, True, True, "ds_RazaoSocial", "Razão Social", 30, 255)
-    Call sprPessoa.NovaColunaSpread(eslTexto, True, True, "ds_Endereco", "Endereco", 30, 100)
-    Call sprPessoa.NovaColunaSpread(eslTexto, True, True, "ds_Bairro", "Bairro", 30, 50)
-    Call sprPessoa.NovaColunaSpread(eslTexto, True, True, "ds_Cidade", "Cidade", 30, 50)
-    Call sprPessoa.NovaColunaSpread(eslTexto, True, True, "cd_Estado", "UF", 5, 5)
-    Call sprPessoa.NovaColunaSpread(eslCheck, True, True, "tp_Cliente", "Cliente", 10, 1)
-    Call sprPessoa.NovaColunaSpread(eslCheck, True, True, "tp_Fornecedor", "Fornecedor", 10, 1)
-    Call sprPessoa.NovaColunaSpread(eslCheck, True, True, "tp_Funcionario", "Funcionario", 10, 1)
-    Call sprPessoa.FormatarNovo(21)
-
+    Call sprPessoa.FormatarPorClasse(cServicoPessoa.FormatarSpreadPessoa)
     sprPessoa.ColsFrozenName = "ds_Pessoa"
-
-
-End Function
-Private Function CarregarComponentes()
 
     sCampos = "a.id_Pessoa, a.cd_cnpjcpf, a.ds_Pessoa, a.ds_RazaoSocial, a.ds_Endereco, a.ds_Bairro, b.ds_Cidade," _
     & " c.cd_Estado, a.tp_Cliente, a.tp_Fornecedor, a.tp_Funcionario"
@@ -275,31 +251,33 @@ Private Function CarregarComponentes()
     & " left join tbdEstado c on b.id_Estado = c.id_Estado)" _
     & " left join tbdPessoaFuncionario d on a.id_Pessoa = d.id_Pessoa)"
 
+    Set cServicoPessoa = Nothing
+    
+    Exit Function
+err_IniciarComponentes:
+    ShowError
 End Function
 
 Private Sub cmdPesquisar_Click()
 On Error GoTo err_cmdPesquisar
 
-    Dim sWhere As String
-            
-    sWhere = MontarWhere
+    Call MontarWhere
     
     If sWhere = "" Then
         Mensagem "Favor preencher algum parametro de pesquisa!", Informacao
         Exit Sub
     End If
     
-    Call sprPessoa.Carregar(Select_Table(False, sTabela, sCampos, sWhere, "a.id_Pessoa"))
+    Call Pesquisar
     
     Exit Sub
 err_cmdPesquisar:
     ShowError
 End Sub
-Private Function MontarWhere() As String
+Private Function MontarWhere()
 On Error GoTo err_MontarWhere
     Dim sWhere As String
     
-    MontarWhere = ""
     sWhere = ""
     
     If cboPessoa.ItemData2 > 0 Then
@@ -330,59 +308,18 @@ On Error GoTo err_MontarWhere
         sWhere = Left(sWhere, Len(sWhere) - 5)
     End If
     
-    MontarWhere = sWhere
-    
     Exit Function
 err_MontarWhere:
     ShowError
 End Function
-Private Function MontarWhereCrystal() As String
-On Error GoTo err_MontarWhere
-    Dim sWhere As String
+
+Private Function Pesquisar()
+On Error GoTo err_Pesquisar
     
-    MontarWhereCrystal = ""
-    sWhere = ""
-    
-        If cboPessoa.ItemData2 > 0 Then
-        sWhere = sWhere & "a.id_Pessoa = " & cboPessoa.ItemData2 & " AND "
-    End If
-    
-    If cboCidade.ItemData2 > 0 Then
-        sWhere = sWhere & "a.id_Cidade = " & cboCidade.ItemData2 & " AND "
-    End If
-    
-    If cboEstado.ItemData2 > 0 Then
-        sWhere = sWhere & "b.id_Estado = " & cboEstado.ItemData2 & " AND "
-    End If
-    
-    If chkCliente.Value Then
-        sWhere = sWhere & "a.tp_Cliente = 'S' AND "
-    End If
-    
-    If chkFornecedor.Value Then
-        sWhere = sWhere & "{tbdPessoa.tp_Fornecedor} = 'S' AND "
-    End If
-    
-    If chkFuncionario Then
-        sWhere = sWhere & "a.tp_Funcionario = 'S' AND "
-    End If
-    
-    If Len(sWhere) > 5 Then
-        sWhere = Left(sWhere, Len(sWhere) - 5)
-    End If
-    
-    If txtCodigo.Text <> "" Then
-        sWhere = sWhere & "{tbdProduto.cd_Produto} = '" & Trim(txtCodigo) & "' AND "
-    End If
-    
-    If Len(sWhere) > 5 Then
-        sWhere = Left(sWhere, Len(sWhere) - 5)
-    End If
-    
-    MontarWhereCrystal = sWhere
+    Call sprPessoa.Carregar(Select_Table(False, sTabela, sCampos, sWhere, "a.id_Pessoa"))
     
     Exit Function
-err_MontarWhere:
+err_Pesquisar:
     ShowError
 End Function
 
@@ -446,7 +383,6 @@ End Sub
 Private Sub cmdImprimir_Click()
 On Error GoTo err_cmdImprimir
     
-    Dim sWhere As String
     Dim sFiltro As String
     
     cryRelatorio.ReportFileName = sPathReport & "\Relatorios\Pessoa.rpt"
@@ -461,11 +397,70 @@ err_cmdImprimir:
     ShowError
 End Sub
 
+Private Function MontarWhereCrystal()
+On Error GoTo err_MontarWhere
+    Dim sWhere As String
+    
+    sWhere = ""
+    
+    If cboPessoa.ItemData2 > 0 Then
+        sWhere = sWhere & "a.id_Pessoa = " & cboPessoa.ItemData2 & " AND "
+        sFiltros = ""
+    End If
+    
+    If cboCidade.ItemData2 > 0 Then
+        sWhere = sWhere & "a.id_Cidade = " & cboCidade.ItemData2 & " AND "
+        sFiltros = ""
+    End If
+    
+    If cboEstado.ItemData2 > 0 Then
+        sWhere = sWhere & "b.id_Estado = " & cboEstado.ItemData2 & " AND "
+        sFiltros = ""
+    End If
+    
+    If chkCliente.Value Then
+        sWhere = sWhere & "a.tp_Cliente = 'S' AND "
+        sFiltros = ""
+    End If
+    
+    If chkFornecedor.Value Then
+        sWhere = sWhere & "{tbdPessoa.tp_Fornecedor} = 'S' AND "
+        sFiltros = ""
+    End If
+    
+    If chkFuncionario Then
+        sWhere = sWhere & "a.tp_Funcionario = 'S' AND "
+        sFiltros = ""
+    End If
+    
+    If Len(sWhere) > 5 Then
+        sWhere = Left(sWhere, Len(sWhere) - 5)
+        sFiltros = ""
+    End If
+    
+    If txtCodigo.Text <> "" Then
+        sWhere = sWhere & "{tbdProduto.cd_Produto} = '" & Trim(txtCodigo) & "' AND "
+        sFiltros = ""
+    End If
+    
+    If Len(sWhere) > 5 Then
+        sWhere = Left(sWhere, Len(sWhere) - 5)
+        sFiltros = ""
+    End If
+    
+    Exit Function
+err_MontarWhere:
+    ShowError
+End Function
+
 Private Sub cmdSair_Click()
     Unload Me
 End Sub
 
 Public Sub AtualizarDados(id_Pessoa As Long)
     Call sprPessoa.AtualizarDadosSpread(id_Pessoa, "a.id_Pessoa", sTabela, sCampos)
+End Sub
+Private Sub Form_Unload(Cancel As Integer)
+    Set frmPessoaConsulta = Nothing
 End Sub
 
