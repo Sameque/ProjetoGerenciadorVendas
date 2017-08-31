@@ -100,12 +100,12 @@ Begin VB.Form frmPedidoCompraConsulta
          TabIndex        =   3
          Top             =   735
          Width           =   1830
-         _ExtentX        =   3228
-         _ExtentY        =   900
-         AutoTab         =   0   'False
-         ToolTip         =   ""
-         Mascara         =   4
-         Label           =   "Data da Compra Final"
+         _extentx        =   3228
+         _extenty        =   900
+         autotab         =   0
+         tooltip         =   ""
+         mascara         =   4
+         label           =   "Data da Compra Final"
       End
       Begin Threed.SSFrame fraEntregue 
          Height          =   1050
@@ -158,12 +158,12 @@ Begin VB.Form frmPedidoCompraConsulta
          TabIndex        =   2
          Top             =   225
          Width           =   1830
-         _ExtentX        =   3228
-         _ExtentY        =   900
-         AutoTab         =   0   'False
-         ToolTip         =   ""
-         Mascara         =   4
-         Label           =   "Data da Compra Inicial"
+         _extentx        =   3228
+         _extenty        =   900
+         autotab         =   0
+         tooltip         =   ""
+         mascara         =   4
+         label           =   "Data da Compra Inicial"
       End
       Begin Transportes.SuperDBCombo cboComprador 
          Height          =   510
@@ -171,9 +171,9 @@ Begin VB.Form frmPedidoCompraConsulta
          TabIndex        =   1
          Top             =   225
          Width           =   4080
-         _ExtentX        =   7197
-         _ExtentY        =   900
-         Label           =   "Comprador"
+         _extentx        =   7197
+         _extenty        =   900
+         label           =   "Comprador"
       End
       Begin Transportes.SuperDBCombo cboFornecedor 
          Height          =   510
@@ -181,9 +181,9 @@ Begin VB.Form frmPedidoCompraConsulta
          TabIndex        =   0
          Top             =   225
          Width           =   4215
-         _ExtentX        =   7435
-         _ExtentY        =   900
-         Label           =   "Fornecedor"
+         _extentx        =   7435
+         _extenty        =   900
+         label           =   "Fornecedor"
       End
    End
    Begin Transportes.SuperSpreadNovo sprConsulta 
@@ -192,8 +192,8 @@ Begin VB.Form frmPedidoCompraConsulta
       TabIndex        =   8
       Top             =   1500
       Width           =   12585
-      _ExtentX        =   22199
-      _ExtentY        =   8440
+      _extentx        =   22199
+      _extenty        =   8440
    End
    Begin Crystal.CrystalReport cryRelatorio 
       Left            =   240
@@ -222,7 +222,7 @@ On Error GoTo err_cmdBaixarRecebimento_Click
     
     sprConsulta.Row = sprConsulta.ActiveRow
     If sprConsulta.RowHidden = False And Val(sprConsulta.SpreadEventoName("id_Compra")) > 0 Then
-        Set frmPedidoCompraBaixaRecebimento.formChamador = Me
+        Set frmPedidoCompraBaixaRecebimento.FormChamador = Me
         frmPedidoCompraBaixaRecebimento.id_Compra = sprConsulta.SpreadEventoName("id_Compra")
         frmPedidoCompraBaixaRecebimento.Show vbModal
     End If
@@ -239,8 +239,8 @@ End Sub
 Private Sub Form_Load()
 On Error GoTo err_FormLoad
        
-    Call sprConsulta.NovaColunaSpread(eslNumero, True, True, "id_Compra", "id_Compra", 0, 15)
-    Call sprConsulta.NovaColunaSpread(eslNumero, True, True, "id_Compra", "Pedido de Compra", 15, 15)
+    Call sprConsulta.NovaColunaSpread(eslnumero, True, True, "id_Compra", "id_Compra", 0, 15)
+    Call sprConsulta.NovaColunaSpread(eslnumero, True, True, "id_Compra", "Pedido de Compra", 15, 15)
     Call sprConsulta.NovaColunaSpread(eslTexto, True, True, "ds_Pessoa", "Fornecedor", 30, 255)
     Call sprConsulta.NovaColunaSpread(eslData, True, True, "dt_Compra", "Data da Compra", 10, 10)
     Call sprConsulta.NovaColunaSpread(eslData, True, True, "dt_PrevisaoEntrega", "Data Prev. Entre", 10, 10)
@@ -329,7 +329,7 @@ err_MontarWhere:
 End Function
 
 Private Sub cmdIncluir_Click()
-    Set frmPedidoCompraDados.formChamador = Me
+    Set frmPedidoCompraDados.FormChamador = Me
     frmPedidoCompraDados.id_Compra = 0
     frmPedidoCompraDados.Show vbModal
 End Sub
@@ -339,7 +339,7 @@ On Error GoTo err_cmdAlterar_Click
     
     sprConsulta.Row = sprConsulta.ActiveRow
     If sprConsulta.RowHidden = False And Val(sprConsulta.SpreadEventoName("id_Compra")) > 0 Then
-        Set frmPedidoCompraDados.formChamador = Me
+        Set frmPedidoCompraDados.FormChamador = Me
         frmPedidoCompraDados.id_Compra = sprConsulta.SpreadEventoName("id_Compra")
         frmPedidoCompraDados.Show vbModal
     End If

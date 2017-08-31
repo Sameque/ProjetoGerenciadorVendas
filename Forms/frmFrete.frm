@@ -5,26 +5,25 @@ Begin VB.Form frmFrete
    ClientHeight    =   5355
    ClientLeft      =   45
    ClientTop       =   330
-   ClientWidth     =   9870
-   DrawStyle       =   1  'Dash
+   ClientWidth     =   10320
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MDIChild        =   -1  'True
    MinButton       =   0   'False
    ScaleHeight     =   5355
    ScaleMode       =   0  'User
-   ScaleWidth      =   9870
+   ScaleWidth      =   10320
    Begin Transportes.SuperTextMultiline txtVprestCustomizada 
       Height          =   3195
       Left            =   5280
       TabIndex        =   2
       Top             =   1980
       Width           =   4455
-      _ExtentX        =   7858
-      _ExtentY        =   5636
-      SkinESL         =   -1  'True
-      BackColor       =   16119285
-      Label           =   "Tag configurada pelo usuário"
+      _extentx        =   7858
+      _extenty        =   5636
+      skinesl         =   -1
+      backcolor       =   16119285
+      label           =   "Tag configurada pelo usuário"
    End
    Begin Transportes.SuperTextMultiline txtVprestNormal 
       Height          =   3195
@@ -32,11 +31,11 @@ Begin VB.Form frmFrete
       TabIndex        =   1
       Top             =   1980
       Width           =   4815
-      _ExtentX        =   8493
-      _ExtentY        =   5636
-      SkinESL         =   -1  'True
-      BackColor       =   16119285
-      Label           =   "Tag padrão sistema"
+      _extentx        =   8493
+      _extenty        =   5636
+      skinesl         =   -1
+      backcolor       =   16119285
+      label           =   "Tag padrão sistema"
    End
    Begin Transportes.SuperSpreadNovo sprFrete 
       Height          =   1755
@@ -44,12 +43,12 @@ Begin VB.Form frmFrete
       TabIndex        =   0
       Top             =   150
       Width           =   9765
-      _ExtentX        =   17224
-      _ExtentY        =   3096
-      BackColorCellAtiva=   14733514
-      GrayAreaBackColor=   14670555
-      SkinESL         =   -1  'True
-      Label           =   "Frete"
+      _extentx        =   17224
+      _extenty        =   3096
+      backcolorcellativa=   14733514
+      grayareabackcolor=   14670555
+      label           =   "Frete"
+      skinesl         =   -1
    End
 End
 Attribute VB_Name = "frmFrete"

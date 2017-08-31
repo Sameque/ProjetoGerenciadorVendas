@@ -15,8 +15,9 @@ Option Explicit
 
 Public MensagemRetorno As String
 
-Dim sCampos As String
-Dim aConteudo As Variant
+Private sCampos As String
+Private aConteudo As Variant
+
 
 Public Function CarregarPorID(ByVal id_frete As Long, Optional ByVal blnCarregarFilhos) As clsFrete
 On Error GoTo err_Handler
@@ -46,14 +47,14 @@ On Error GoTo err_Handler
             .vl_TaxasDiversas = ReadField(rsado, "vl_TaxasDiversas")
             .vl_TotalFrete = ReadField(rsado, "vl_TotalFrete")
              
-             Call CarregarNomenclatura(.ID)
+             Call CarregarNomenclatura(cFrete)
         End With
     Else
         MensagemRetorno = "Registro não Localizado."
     End If
     rsado.Close
     
-    If Not carregar Then
+    If Not Carregar Then
         
     End If
     
@@ -67,16 +68,57 @@ err_Handler:
     End
 End Function
 
-Public Function CarregarNomenclatura(ByRef cFrete As clsFrete, ByVal id_Pessoa As Long)
-On Error GoTo err_Handler
+Public Function CarregarNomenclatura(ByRef cFrete As clsFrete)
+On Error GoTo err_CarregarNomenclatura
+    
+    Dim rsado As New ADODB.Recordset
+    
+    Call Select_Table(True, "tbdNomenclatura", "id_Nomenclatura", "id_Pessoa =" & cFrete.id_Pessoa, , , , , rsado)
+    
+    If ReadField(rsado, "id_Nomenclatura") > 0 Then
+        Call CarregarNomenclaturaCustomizada(cFrete)
+    Else
+        Call CarregarNomenclaturaPadrao(cFrete)
+    End If
+    
+    rsado.Close
+    Set rsado = Nothing
+    
+    Exit Function
+err_CarregarNomenclatura:
+    ShowError "Ocorreu um erro ao Carregar os Dados."
+    End
+End Function
+
+Private Function CarregarNomenclaturaPadrao(ByRef cFrete As clsFrete)
+On Error GoTo err_CarregarNomenclaturaPadrao
+
+    Call cFrete.AdicionarNomenclatura(0, "vl_FretePeso", "Frete Peso", "S", Nenhum)
+    Call cFrete.AdicionarNomenclatura(0, "vl_Coleta", "Coleta", "S", Nenhum)
+    Call cFrete.AdicionarNomenclatura(0, "vl_Entrega", "Entrega", "S", Nenhum)
+    Call cFrete.AdicionarNomenclatura(0, "vl_FreteValor", "Frete Valor", "S", Nenhum)
+    Call cFrete.AdicionarNomenclatura(0, "vl_GRIS", "GRIS", "S", Nenhum)
+    Call cFrete.AdicionarNomenclatura(0, "vl_ITR", "ITR", "S", Nenhum)
+    Call cFrete.AdicionarNomenclatura(0, "vl_Despacho", "Despacho", "S", Nenhum)
+    Call cFrete.AdicionarNomenclatura(0, "vl_SECCAT", "SEC/CAT", "S", Nenhum)
+    Call cFrete.AdicionarNomenclatura(0, "vl_SUFRAMA", "SUFRAMA", "S", Nenhum)
+    Call cFrete.AdicionarNomenclatura(0, "vl_Pedagio", "Pedágio", "S", Nenhum)
+    Call cFrete.AdicionarNomenclatura(0, "vl_TaxasDiversas", "Taxas Diversas  ", "S", Nenhum)
+    
+    Exit Function
+err_CarregarNomenclaturaPadrao:
+    ShowError
+End Function
+
+Private Function CarregarNomenclaturaCustomizada(ByRef cFrete As clsFrete)
+On Error GoTo err_CarregarNomenclaturaCustomizada
 
     Dim cNomenclatura As New clsNomenclatura
     Dim rsado As New ADODB.Recordset
 
-
     Call Select_Table(True, "tbdNomenclatura", _
                      "id_Nomenclatura,ds_NomeColuna,tp_Enviar,id_Pessoa,ds_NomenclaturaConfigurada,ds_NomenclaturaPadrao,ds_Nomenclatura", _
-                     "id_Pessoa =" & id_Pessoa, , , , , rsado)
+                     "id_Pessoa =" & cFrete.id_Pessoa, , , , , rsado)
     
     Do While Not rsado.EOF
         Call cFrete.AdicionarNomenclatura(ReadField(rsado, "id_Nomenclatura"), ReadField(rsado, "ds_NomeColuna"), _
@@ -89,11 +131,10 @@ On Error GoTo err_Handler
 
     Set CarregarPorID = cNomenclatura
     Set cNomenclatura = Nothing
-
+    
     Exit Function
-err_Handler:
-    ShowError "Ocorreu um erro ao Carregar os Dados."
-    End
+err_CarregarNomenclaturaCustomizada:
+    ShowError
 End Function
 
 Public Function Salvar(ByRef cFrete As clsFrete) As Boolean
@@ -153,23 +194,23 @@ err_Handler:
     ShowError
 End Function
 
-Private Sub CarregarValidacaoFrete(ByRef cServicoBase As clsServicoBase, ByRef cFrete As clsFrete)
-    If cFrete.StatusGravacao <> EnumStatusGravacao.Excluir Then
-        Call cServicoBase.AdicionarValidacao(cFrete.id_Pessoa > 0, "Pessoa", "", EnumAcaoMensagem.Bloquear)
-        Call cServicoBase.AdicionarValidacao(cFrete.vl_FretePeso > 0, "FretePeso", "", EnumAcaoMensagem.Bloquear)
-        Call cServicoBase.AdicionarValidacao(cFrete.vl_Coleta > 0, "Coleta", "", EnumAcaoMensagem.Bloquear)
-        Call cServicoBase.AdicionarValidacao(cFrete.vl_Entrega > 0, "Entrega", "", EnumAcaoMensagem.Bloquear)
-        Call cServicoBase.AdicionarValidacao(cFrete.vl_FreteValor > 0, "FreteValor", "", EnumAcaoMensagem.Bloquear)
-        Call cServicoBase.AdicionarValidacao(cFrete.vl_GRIS > 0, "GRIS", "", EnumAcaoMensagem.Bloquear)
-        Call cServicoBase.AdicionarValidacao(cFrete.vl_ITR > 0, "ITR", "", EnumAcaoMensagem.Bloquear)
-        Call cServicoBase.AdicionarValidacao(cFrete.vl_Despacho > 0, "Despacho", "", EnumAcaoMensagem.Bloquear)
-        Call cServicoBase.AdicionarValidacao(cFrete.vl_SECCAT > 0, "SECCAT", "", EnumAcaoMensagem.Bloquear)
-        Call cServicoBase.AdicionarValidacao(cFrete.vl_SUFRAMA > 0, "SUFRAMA", "", EnumAcaoMensagem.Bloquear)
-        Call cServicoBase.AdicionarValidacao(cFrete.vl_Pedagio > 0, "Pedagio", "", EnumAcaoMensagem.Bloquear)
-        Call cServicoBase.AdicionarValidacao(cFrete.vl_TaxasDiversas > 0, "TaxasDiversas", "", EnumAcaoMensagem.Bloquear)
-        Call cServicoBase.AdicionarValidacao(cFrete.vl_TotalFrete > 0, "TotalFrete", "", EnumAcaoMensagem.Bloquear)
-    End If
-End Sub
+Public Function RetornaNomenclatura(ByVal cFrete As clsFrete)
+On Error GoTo err_RetornaNomenclatura
+    
+    
+    
+    Exit Function
+err_RetornaNomenclatura:
+    ShowError
+End Function
+
+Public Function RetornaXMLVprest(cFrete As clsFrete)
+On Error GoTo err_RetornaXMLVprest
+
+Exit Function
+err_RetornaXMLVprest:
+    ShowError
+End Function
 
 Public Function FormatarSpreadFrete() As clsESLFormatacaoForm
 On Error GoTo err_Handler
@@ -232,3 +273,22 @@ On Error GoTo err_Handler
 err_Handler:
     ShowError
 End Function
+
+Private Sub CarregarValidacaoFrete(ByRef cServicoBase As clsServicoBase, ByRef cFrete As clsFrete)
+    If cFrete.StatusGravacao <> EnumStatusGravacao.Excluir Then
+        Call cServicoBase.AdicionarValidacao(cFrete.id_Pessoa > 0, "Pessoa", "", EnumAcaoMensagem.Bloquear)
+        Call cServicoBase.AdicionarValidacao(cFrete.vl_FretePeso > 0, "FretePeso", "", EnumAcaoMensagem.Bloquear)
+        Call cServicoBase.AdicionarValidacao(cFrete.vl_Coleta > 0, "Coleta", "", EnumAcaoMensagem.Bloquear)
+        Call cServicoBase.AdicionarValidacao(cFrete.vl_Entrega > 0, "Entrega", "", EnumAcaoMensagem.Bloquear)
+        Call cServicoBase.AdicionarValidacao(cFrete.vl_FreteValor > 0, "FreteValor", "", EnumAcaoMensagem.Bloquear)
+        Call cServicoBase.AdicionarValidacao(cFrete.vl_GRIS > 0, "GRIS", "", EnumAcaoMensagem.Bloquear)
+        Call cServicoBase.AdicionarValidacao(cFrete.vl_ITR > 0, "ITR", "", EnumAcaoMensagem.Bloquear)
+        Call cServicoBase.AdicionarValidacao(cFrete.vl_Despacho > 0, "Despacho", "", EnumAcaoMensagem.Bloquear)
+        Call cServicoBase.AdicionarValidacao(cFrete.vl_SECCAT > 0, "SECCAT", "", EnumAcaoMensagem.Bloquear)
+        Call cServicoBase.AdicionarValidacao(cFrete.vl_SUFRAMA > 0, "SUFRAMA", "", EnumAcaoMensagem.Bloquear)
+        Call cServicoBase.AdicionarValidacao(cFrete.vl_Pedagio > 0, "Pedagio", "", EnumAcaoMensagem.Bloquear)
+        Call cServicoBase.AdicionarValidacao(cFrete.vl_TaxasDiversas > 0, "TaxasDiversas", "", EnumAcaoMensagem.Bloquear)
+        Call cServicoBase.AdicionarValidacao(cFrete.vl_TotalFrete > 0, "TotalFrete", "", EnumAcaoMensagem.Bloquear)
+    End If
+End Sub
+

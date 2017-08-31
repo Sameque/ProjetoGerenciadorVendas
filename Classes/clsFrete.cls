@@ -52,7 +52,7 @@ Private Sub Class_Initialize()
     Call ZerarListas
 End Sub
 
-Public Function AdicionarNomenclatura(ByVal id_Nomenclatura As Long, ByVal ds_NomeColuna As String, ByVal ds_Nomenclatura As String, ByVal tp_Enviar As String, ByVal id_Pessoa As Long, ByVal StatusGravacao As EnumStatusGravacao) As Boolean
+Public Function AdicionarNomenclatura(ByVal id_Nomenclatura As Long, ByVal ds_NomeColuna As String, ByVal ds_Nomenclatura As String, ByVal tp_Enviar As String, ByVal StatusGravacao As EnumStatusGravacao) As Boolean
 On Error GoTo err_Handler
 
     AdicionarNomenclatura = False
