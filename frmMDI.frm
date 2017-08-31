@@ -7,7 +7,7 @@ Begin VB.MDIForm frmMDI
    ClientHeight    =   7740
    ClientLeft      =   2115
    ClientTop       =   2235
-   ClientWidth     =   10425
+   ClientWidth     =   10155
    Icon            =   "frmMDI.frx":0000
    LinkTopic       =   "MDIForm1"
    WindowState     =   2  'Maximized
@@ -18,9 +18,9 @@ Begin VB.MDIForm frmMDI
       TabIndex        =   0
       Top             =   0
       Visible         =   0   'False
-      Width           =   10425
+      Width           =   10155
       _Version        =   65536
-      _ExtentX        =   18389
+      _ExtentX        =   17912
       _ExtentY        =   714
       _StockProps     =   15
       BackColor       =   14215660
@@ -89,8 +89,8 @@ Begin VB.MDIForm frmMDI
       Left            =   0
       TabIndex        =   6
       Top             =   7515
-      Width           =   10425
-      _ExtentX        =   18389
+      Width           =   10155
+      _ExtentX        =   17912
       _ExtentY        =   397
       SimpleText      =   ""
       _Version        =   327682
@@ -98,22 +98,18 @@ Begin VB.MDIForm frmMDI
          NumPanels       =   4
          BeginProperty Panel1 {0713E89F-850A-101B-AFC0-4210102A8DA7} 
             AutoSize        =   2
-            Key             =   ""
             Object.Tag             =   ""
          EndProperty
          BeginProperty Panel2 {0713E89F-850A-101B-AFC0-4210102A8DA7} 
             AutoSize        =   2
-            Key             =   ""
             Object.Tag             =   ""
          EndProperty
          BeginProperty Panel3 {0713E89F-850A-101B-AFC0-4210102A8DA7} 
             AutoSize        =   2
-            Key             =   ""
             Object.Tag             =   ""
          EndProperty
          BeginProperty Panel4 {0713E89F-850A-101B-AFC0-4210102A8DA7} 
             AutoSize        =   2
-            Key             =   ""
             Object.Tag             =   ""
          EndProperty
       EndProperty
@@ -162,6 +158,12 @@ Begin VB.MDIForm frmMDI
    End
    Begin VB.Menu mnuOperacional 
       Caption         =   "&Operacional"
+      Begin VB.Menu mnuFrete 
+         Caption         =   "&Frete"
+      End
+      Begin VB.Menu mnuNomenclaturaCampos 
+         Caption         =   "&Nomenclatura Campos"
+      End
       Begin VB.Menu mnuPedidoCompra 
          Caption         =   "&Pedido de Compra"
       End
@@ -281,6 +283,14 @@ End Sub
 
 Private Sub mnuCadastroTipoBaixa_Click()
     frmFinanceiroNatureza.Show
+End Sub
+
+Private Sub mnuFrete_Click()
+    frmFrete.Show
+End Sub
+
+Private Sub mnuNomenclaturaCampos_Click()
+    frmNomenclaturaCampos.Show
 End Sub
 
 Private Sub mnuPedidoCompra_Click()

@@ -189,7 +189,7 @@ Begin VB.Form frmPessoaDados
          Caption         =   "Funcionário"
          BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
             Name            =   "MS Sans Serif"
-            Size            =   8.26
+            Size            =   8.25
             Charset         =   0
             Weight          =   400
             Underline       =   0   'False
@@ -210,7 +210,7 @@ Begin VB.Form frmPessoaDados
          Caption         =   "Fornecedor"
          BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
             Name            =   "MS Sans Serif"
-            Size            =   8.26
+            Size            =   8.25
             Charset         =   0
             Weight          =   400
             Underline       =   0   'False
@@ -231,7 +231,7 @@ Begin VB.Form frmPessoaDados
          Caption         =   "Cliente"
          BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
             Name            =   "MS Sans Serif"
-            Size            =   8.26
+            Size            =   8.25
             Charset         =   0
             Weight          =   400
             Underline       =   0   'False
@@ -301,10 +301,6 @@ Public FormChamador As Form
 Public mcPessoa As New clsPessoa
 Private mstrMensagemRetorno As String
 
-Private Sub cboCidade_Change()
-
-End Sub
-
 Private Sub cmdExcluir_Click()
     Call Excluir
 End Sub
@@ -313,7 +309,7 @@ Private Sub Form_Load()
 On Error GoTo err_Form_Load
     
     Call FormatarComponentes
-    Call CarregarComponentes(mlngPessoa)
+    Call CarregarComponentes
     Call CenterForm(Me)
     
     Exit Sub
@@ -321,74 +317,41 @@ err_Form_Load:
     ShowError
 End Sub
 
-Private Sub cmdGravar_Click()
-On Error GoTo err_cmdGravar_Click
-
-    If Not ValidarControlesNovo(Me) Then
-        Exit Sub
-    End If
-    
-    If Mensagem("Confirma Gravação?", Pergunta) = vbNo Then
-        Exit Sub
-    End If
-    
-    If Not CarregarPropriedadesPessoa() Then
-        Mensagem mstrMensagemRetorno, erro
-        Exit Sub
-    End If
-    
-    If Not CarregarPropriedadesContatos() Then
-        Mensagem mstrMensagemRetorno, erro
-        Exit Sub
-    End If
-    
-    If Not GravarDados Then
-        Mensagem mstrMensagemRetorno, erro
-        Exit Sub
-    End If
-    
-    Call sprContato.AtualizarStatus(mcPessoa.GetListaContatos)
-    
-    Call Mensagem("Gravação Efetuada", Informacao)
-    
-    cmdNovo.SetFocus
-
-    Exit Sub
-err_cmdGravar_Click:
-    ShowError
-    
-End Sub
-
-Private Sub cmdNovo_Click()
-    Call LimparControles(Me)
-    Set mcPessoa = Nothing
-    mlngPessoa = 0
-End Sub
-
-Private Sub cmdSair_Click()
-    Unload Me
-End Sub
-
-Private Sub txtCNPJCPF_LostFocus()
-    Call CarregarPorCNPJ
-End Sub
-
-Private Function CarregarComponentes(ByVal lngPesquisa As Long, Optional ByVal strCNPJ As String = "")
-On Error GoTo err_CarregarCampos
+Private Function FormatarComponentes()
+On Error GoTo err_FormatarComponentes
     Dim cServicoPessoa As New clsServicoPessoa
-        
-    If strCNPJ <> "" Then
-        Set mcPessoa = cServicoPessoa.CarregarPorCNPJ(strCNPJ, True)
-    Else
-        Set mcPessoa = cServicoPessoa.CarregarPorID(lngPesquisa, True)
+            
+    Call cboCidade.Formatar("a.id_Cidade, a.ds_Cidade, b.ds_Estado", "0,3000,1000", "false,true,true", "tbdCidade a left join tbdEstado b on a.id_Estado = b.id_Estado", "", "ds_Cidade")
+    Call sprContato.FormatarPorClasse(cServicoPessoa.FormatarSpreadPessoaContato)
+    
+    Exit Function
+err_FormatarComponentes:
+    ShowError
+End Function
+
+Private Function CarregarComponentes()
+On Error GoTo err_CarregarComponentes
+    Dim cServicoPessoa As New clsServicoPessoa
+    
+    Set mcPessoa = cServicoPessoa.CarregarPorID(mlngPessoa, True)
+    
+    If mcPessoa.id_Pessoa > 0 Then
+        If Not CarregarTela Then
+            Exit Function
+        End If
     End If
     
-    If mcPessoa.id_Pessoa <= 0 Then
-        Exit Function
-    End If
+    Exit Function
+err_CarregarComponentes:
+    mstrMensagemRetorno = "Erro ao carregaar Pessoa"
+End Function
+
+Private Function CarregarTela() As Boolean
+On Error GoTo err_CarregarTela
 
     Call LimparControles(Me)
     
+    CarregarTela = False
     With mcPessoa
         If .id_Pessoa > 0 Then
             mskCEP.Text = .cd_CEP
@@ -402,15 +365,104 @@ On Error GoTo err_CarregarCampos
             chkFuncionario = IIf(.tp_Funcionario = "S", True, False)
             
             Call cboCidade.PesquisarCombo(True, .id_Cidade, "", True)
+            Call sprContato.CarregarPorClasse("id_Pessoa = " & .id_Pessoa)
+            CarregarTela = True
         End If
     End With
     
-    Call sprContato.CarregarPorClasse("id_Pessoa = " & mcPessoa.id_Pessoa)
-    
     Exit Function
-err_CarregarCampos:
+err_CarregarTela:
     ShowError
 End Function
+
+Private Sub txtCNPJCPF_LostFocus()
+    
+    If Not CarregarPorCNPJ Then
+        Exit Sub
+    End If
+    
+End Sub
+
+Private Function CarregarPorCNPJ() As Boolean
+On Error GoTo err_CarregarPorCNPJ
+    Dim cServicoPessoa As New clsServicoPessoa
+    
+    CarregarPorCNPJ = False
+    
+    If txtCNPJCPF.Text = "" Or txtCNPJCPF.Text = mcPessoa.cd_cnpjcpf Then
+        Exit Function
+    End If
+    
+    Set mcPessoa = cServicoPessoa.CarregarPorCNPJ(txtCNPJCPF.Text, True)
+    
+    If mcPessoa.id_Pessoa <= 0 Then
+        Mensagem cServicoPessoa.mstrMensagemRetorno, erro
+        Exit Function
+    End If
+    
+    If Not CarregarTela Then
+        Exit Function
+    End If
+    CarregarPorCNPJ = True
+    
+    Exit Function
+err_CarregarPorCNPJ:
+    ShowError
+End Function
+
+Private Sub cmdGravar_Click()
+
+    If Not ValidarControlesNovo(Me) Then
+        Exit Sub
+    End If
+    
+    If Mensagem("Confirma Gravação?", Pergunta) = vbNo Then
+        Exit Sub
+    End If
+    
+    If Not CarregarPropriedades Then
+        Mensagem mstrMensagemRetorno, erro
+    End If
+    
+    If Not GravarDados Then
+        Mensagem mstrMensagemRetorno, erro
+        Exit Sub
+    End If
+    
+    Call sprContato.AtualizarStatus(mcPessoa.id_Pessoa)
+    
+    Call Mensagem("Gravação Efetuada", Informacao)
+    
+    cmdNovo.SetFocus
+
+End Sub
+
+Private Function CarregarPropriedades()
+On Error GoTo err_CarregarPropriedades
+
+    If Not CarregarPropriedadesPessoa() Then
+        Mensagem mstrMensagemRetorno, erro
+        Exit Sub
+    End If
+    
+    If Not CarregarPropriedadesContatos() Then
+        Mensagem mstrMensagemRetorno, erro
+        Exit Sub
+    End If
+
+    Exit Function
+err_CarregarPropriedades:
+    ShowError
+End Function
+Private Sub cmdNovo_Click()
+    Call LimparControles(Me)
+    Set mcPessoa = Nothing
+    mlngPessoa = 0
+End Sub
+
+Private Sub cmdSair_Click()
+    Unload Me
+End Sub
 
 Private Function CarregarPropriedadesContatos() As Boolean
 On Error GoTo err_CarregarContatos
@@ -488,17 +540,6 @@ On Error GoTo err_CarregarPropriedades
 err_CarregarPropriedades:
     mstrMensagemRetorno = "Erro ao carregar propriedades."
 End Function
-Private Function CarregarPorCNPJ()
-On Error GoTo err_CarregarPorCNPJ
-
-    If txtCNPJCPF.Text <> "" Then
-        Call CarregarComponentes(mlngPessoa, txtCNPJCPF.Text)
-    End If
-    
-    Exit Function
-err_CarregarPorCNPJ:
-    ShowError
-End Function
 Private Function Excluir() As Boolean
 On Error GoTo err_Excluir
     Dim cServicoPessoa As New clsServicoPessoa
@@ -522,17 +563,7 @@ On Error GoTo err_Excluir
 err_Excluir:
     ShowError
 End Function
-Private Function FormatarComponentes()
-On Error GoTo err_FormatarComponentes
-    Dim cServicoPessoa As New clsServicoPessoa
-            
-    Call cboCidade.Formatar("a.id_Cidade, a.ds_Cidade, b.ds_Estado", "0,3000,1000", "false,true,true", "tbdCidade a left join tbdEstado b on a.id_Estado = b.id_Estado", "", "ds_Cidade")
-    Call sprContato.FormatarPorClasse(cServicoPessoa.FormatarSpreadPessoaContato)
-    
-    Exit Function
-err_FormatarComponentes:
-    ShowError
-End Function
+
 Private Sub Form_Unload(Cancel As Integer)
     Set mcPessoa = Nothing
 End Sub

@@ -100,9 +100,9 @@ Begin VB.Form frmPessoaConsulta
          TabIndex        =   3
          Top             =   285
          Width           =   2055
-         _extentx        =   3625
-         _extenty        =   900
-         label           =   "Estado"
+         _ExtentX        =   3625
+         _ExtentY        =   900
+         Label           =   "Estado"
       End
       Begin Threed.SSCheck chkFuncionario 
          Height          =   150
@@ -131,12 +131,12 @@ Begin VB.Form frmPessoaConsulta
          TabIndex        =   1
          Top             =   285
          Width           =   5190
-         _extentx        =   9155
-         _extenty        =   900
-         campopesquisa2width=   1500
-         campopesquisa2coluna=   2
-         label           =   "Nome"
-         labelcampopesquisa2=   "CNPJ/CPF"
+         _ExtentX        =   9155
+         _ExtentY        =   900
+         CampoPesquisa2Width=   1500
+         CampoPesquisa2Coluna=   2
+         Label           =   "Nome"
+         LabelCampoPesquisa2=   "CNPJ/CPF"
       End
       Begin Threed.SSCheck chkFornecedor 
          Height          =   150
@@ -186,9 +186,9 @@ Begin VB.Form frmPessoaConsulta
          TabIndex        =   2
          Top             =   285
          Width           =   4005
-         _extentx        =   7064
-         _extenty        =   900
-         label           =   "Cidade"
+         _ExtentX        =   7064
+         _ExtentY        =   900
+         Label           =   "Cidade"
       End
    End
    Begin Transportes.SuperSpreadNovo sprPessoa 
@@ -197,8 +197,8 @@ Begin VB.Form frmPessoaConsulta
       TabIndex        =   0
       Top             =   1365
       Width           =   12585
-      _extentx        =   22199
-      _extenty        =   8678
+      _ExtentX        =   22199
+      _ExtentY        =   8678
    End
    Begin Crystal.CrystalReport cryRelatorio 
       Left            =   240
@@ -221,8 +221,7 @@ Option Explicit
 
 Dim sTabela As String
 Dim sCampos As String
-Dim sWhere As String
-
+Dim mstrWhere As String
 
 Private Sub Form_Activate()
     frmMDI.Arrange vbCascade
@@ -263,12 +262,12 @@ On Error GoTo err_cmdPesquisar
 
     Call MontarWhere
     
-    If sWhere = "" Then
+    If mstrWhere = "" Then
         Mensagem "Favor preencher algum parametro de pesquisa!", Informacao
         Exit Sub
     End If
     
-    Call Pesquisar
+    Call CarregarSprPessoa
     
     Exit Sub
 err_cmdPesquisar:
@@ -276,36 +275,35 @@ err_cmdPesquisar:
 End Sub
 Private Function MontarWhere()
 On Error GoTo err_MontarWhere
-    Dim sWhere As String
     
-    sWhere = ""
+    mstrWhere = ""
     
     If cboPessoa.ItemData2 > 0 Then
-        sWhere = sWhere & "a.id_Pessoa = " & cboPessoa.ItemData2 & " AND "
+        mstrWhere = mstrWhere & "pessoa.id_Pessoa = " & cboPessoa.ItemData2 & " AND "
     End If
     
     If cboCidade.ItemData2 > 0 Then
-        sWhere = sWhere & "a.id_Cidade = " & cboCidade.ItemData2 & " AND "
+        mstrWhere = mstrWhere & "pessoa.id_Cidade = " & cboCidade.ItemData2 & " AND "
     End If
     
     If cboEstado.ItemData2 > 0 Then
-        sWhere = sWhere & "b.id_Estado = " & cboEstado.ItemData2 & " AND "
+        mstrWhere = mstrWhere & "cidade.id_Estado = " & cboEstado.ItemData2 & " AND "
     End If
     
     If chkCliente.Value Then
-        sWhere = sWhere & "a.tp_Cliente = 'S' AND "
+        mstrWhere = mstrWhere & "pessoa.tp_Cliente = 'S' AND "
     End If
     
     If chkFornecedor.Value Then
-        sWhere = sWhere & "a.tp_Fornecedor = 'S' AND "
+        mstrWhere = mstrWhere & "pessoa.tp_Fornecedor = 'S' AND "
     End If
     
     If chkFuncionario Then
-        sWhere = sWhere & "a.tp_Funcionario = 'S' AND "
+        mstrWhere = mstrWhere & "pessoa.tp_Funcionario = 'S' AND "
     End If
     
-    If Len(sWhere) > 5 Then
-        sWhere = Left(sWhere, Len(sWhere) - 5)
+    If Len(mstrWhere) > 5 Then
+        mstrWhere = Left(mstrWhere, Len(mstrWhere) - 5)
     End If
     
     Exit Function
@@ -313,10 +311,11 @@ err_MontarWhere:
     ShowError
 End Function
 
-Private Function Pesquisar()
+Private Function CarregarSprPessoa()
 On Error GoTo err_Pesquisar
+    Dim cServicoPessoa As New clsServicoPessoa
     
-    Call sprPessoa.Carregar(Select_Table(False, sTabela, sCampos, sWhere, "a.id_Pessoa"))
+    Call sprPessoa.CarregarPorClasse(mstrWhere)
     
     Exit Function
 err_Pesquisar:
@@ -387,7 +386,7 @@ On Error GoTo err_cmdImprimir
     
     cryRelatorio.ReportFileName = sPathReport & "\Relatorios\Pessoa.rpt"
     cryRelatorio.WindowParentHandle = frmMDI.hWnd
-    cryRelatorio.SelectionFormula = sWhere
+    cryRelatorio.SelectionFormula = mstrWhere
     cryRelatorio.Formulas(0) = "Filtro='" & sFiltro & "'"
     cryRelatorio.Connect = sStringConexaoRelatorio
     Call ChamarRelatorio(cryRelatorio)
@@ -399,52 +398,51 @@ End Sub
 
 Private Function MontarWhereCrystal()
 On Error GoTo err_MontarWhere
-    Dim sWhere As String
     
-    sWhere = ""
+    mstrWhere = ""
     
     If cboPessoa.ItemData2 > 0 Then
-        sWhere = sWhere & "a.id_Pessoa = " & cboPessoa.ItemData2 & " AND "
+        mstrWhere = mstrWhere & "a.id_Pessoa = " & cboPessoa.ItemData2 & " AND "
         sFiltros = ""
     End If
     
     If cboCidade.ItemData2 > 0 Then
-        sWhere = sWhere & "a.id_Cidade = " & cboCidade.ItemData2 & " AND "
+        mstrWhere = mstrWhere & "a.id_Cidade = " & cboCidade.ItemData2 & " AND "
         sFiltros = ""
     End If
     
     If cboEstado.ItemData2 > 0 Then
-        sWhere = sWhere & "b.id_Estado = " & cboEstado.ItemData2 & " AND "
+        mstrWhere = mstrWhere & "b.id_Estado = " & cboEstado.ItemData2 & " AND "
         sFiltros = ""
     End If
     
     If chkCliente.Value Then
-        sWhere = sWhere & "a.tp_Cliente = 'S' AND "
+        mstrWhere = mstrWhere & "a.tp_Cliente = 'S' AND "
         sFiltros = ""
     End If
     
     If chkFornecedor.Value Then
-        sWhere = sWhere & "{tbdPessoa.tp_Fornecedor} = 'S' AND "
+        mstrWhere = mstrWhere & "{tbdPessoa.tp_Fornecedor} = 'S' AND "
         sFiltros = ""
     End If
     
     If chkFuncionario Then
-        sWhere = sWhere & "a.tp_Funcionario = 'S' AND "
+        mstrWhere = mstrWhere & "a.tp_Funcionario = 'S' AND "
         sFiltros = ""
     End If
     
-    If Len(sWhere) > 5 Then
-        sWhere = Left(sWhere, Len(sWhere) - 5)
+    If Len(mstrWhere) > 5 Then
+        mstrWhere = Left(mstrWhere, Len(mstrWhere) - 5)
         sFiltros = ""
     End If
     
     If txtCodigo.Text <> "" Then
-        sWhere = sWhere & "{tbdProduto.cd_Produto} = '" & Trim(txtCodigo) & "' AND "
+        mstrWhere = mstrWhere & "{tbdProduto.cd_Produto} = '" & Trim(txtCodigo) & "' AND "
         sFiltros = ""
     End If
     
-    If Len(sWhere) > 5 Then
-        sWhere = Left(sWhere, Len(sWhere) - 5)
+    If Len(mstrWhere) > 5 Then
+        mstrWhere = Left(mstrWhere, Len(mstrWhere) - 5)
         sFiltros = ""
     End If
     
@@ -463,4 +461,3 @@ End Sub
 Private Sub Form_Unload(Cancel As Integer)
     Set frmPessoaConsulta = Nothing
 End Sub
-

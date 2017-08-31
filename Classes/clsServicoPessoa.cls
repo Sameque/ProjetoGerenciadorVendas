@@ -16,7 +16,10 @@ Option Explicit
 Public mstrMensagemRetorno          As String
 Private Const mstrTabelaPessoa As String = "tbdPessoa"
 Private Const mstrTabelaPessoaContato As String = "tbdPessoaContato"
-Private Const mstrCamposPessoa As String = "cd_cnpjcpf, ds_Pessoa, ds_RazaoSocial, ds_Endereco, ds_Bairro, id_Cidade, cd_CEP, tp_Cliente, tp_Fornecedor, tp_Funcionario"
+
+Private Const mstrCamposPessoa As String = "pessoa.cd_cnpjcpf, pessoa.ds_Pessoa, pessoa.ds_RazaoSocial," _
+& " pessoa.ds_Endereco, pessoa.ds_Bairro, pessoa.id_Cidade, pessoa.cd_CEP, pessoa.tp_Cliente, " _
+& "pessoa.tp_Fornecedor, pessoa.tp_Funcionario"
 Private Const mstrCamposPessoaContato As String = "id_PessoaContato, ds_Nome, cd_Fone, cd_Email"
 
 Private Sub Class_Initialize()
@@ -31,7 +34,6 @@ End Sub
 
 Public Function CarregarPorID(ByVal id_Pesquisa As Long, Optional ByVal blnCarregarFilho = False) As clsPessoa
 On Error GoTo err_CarregarDados
-    
     Dim rsado As New ADODB.Recordset
     Dim cPessoa As New clsPessoa
     Dim cServisoBase As New clsServicoBase
@@ -85,8 +87,13 @@ On Error GoTo err_CarregarPorCNPJCPF
     
     id_Pessoa = RetornaIDPorCNPJ(strCNPJ)
     
+    If id_Pessoa <= 0 Then
+        mstrMensagemRetorno = "CNPJ " & strCNPJ & " não encontrado."
+        Exit Function
+    End If
+
     Set CarregarPorCNPJ = CarregarPorID(id_Pessoa, blnCarregarFilho)
-    
+        
     mstrMensagemRetorno = ""
 
     Exit Function
@@ -105,6 +112,10 @@ On Error GoTo err_RetornaIDPorCNPJ
         Call Select_Table(True, "tbdPessoa", "id_Pessoa", "cd_CNPJCPF = '" & strCNPJ & "'", , , , , rsado)
         RetornaIDPorCNPJ = ReadField(rsado, "id_Pessoa")
         rsado.Close
+    End If
+    
+    If RetornaIDPorCNPJ <= 0 Then
+        Exit Function
     End If
     
     Set rsado = Nothing
@@ -322,23 +333,28 @@ On Error GoTo err_FormatarSpreadPessoaContato
     Dim cFormatacaoForm As New clsESLFormatacaoForm
     Dim cPessoaContato As New clsPessoaContato
     
-    cFormatacaoForm.Tabela = "tbdPessoa"
-    cFormatacaoForm.Campos = "id_Pessoa, " & mstrCamposPessoa
-    cFormatacaoForm.OrderBY = "ds_Pessoa"
+    cFormatacaoForm.Tabela = "tbdPessoa pessoa " _
+                            & "left join tbdCidade cidade on pessoa.id_Cidade = cidade.id_Cidade " _
+                            & "left join tbdEstado estado on cidade.id_Estado = estado.id_Estado"
+    
+    cFormatacaoForm.Campos = "pessoa.id_Pessoa, " & mstrCamposPessoa
+    cFormatacaoForm.OrderBY = "pessoa.ds_Pessoa"
 
     cFormatacaoForm.ControlaClickSpread = True
     cFormatacaoForm.ControlaQueryAdvance = True
     cFormatacaoForm.ExcluirRegistro = True
 
-    Call cFormatacaoForm.AdicionarColunaSpread(True, False, "id_Pessoa", eslNumero, True, True, "id_PessoaContato", "id_PessoaContato")
-    Call cFormatacaoForm.AdicionarColunaSpread(True, False, "cd_cnpjcpf", eslTexto, True, True, "id_Pessoa", "id_Pessoa")
-    Call cFormatacaoForm.AdicionarColunaSpread(True, False, "ds_Pessoa", eslTexto, False, False, "ds_Nome", "Nome", 20, 50)
-    Call cFormatacaoForm.AdicionarColunaSpread(True, False, "ds_RazaoSocial", eslTexto, False, True, "cd_Fone", "Telefone", 20, 30)
-    Call cFormatacaoForm.AdicionarColunaSpread(True, False, "ds_Endereco", eslTexto, False, True, "cd_Email", "Email", 25, 100)
-    Call cFormatacaoForm.AdicionarColunaSpread(True, False, "cd_CEP", eslTexto, False, True, "cd_Email", "Email", 25, 100)
-    Call cFormatacaoForm.AdicionarColunaSpread(True, False, "ds_Bairro", eslTexto, False, True, "cd_Email", "Email", 25, 100)
+    Call cFormatacaoForm.AdicionarColunaSpread(True, False, "id_Pessoa", eslNumero, True, True, "id_Pessoa", "id_Pessoa")
+    Call cFormatacaoForm.AdicionarColunaSpread(True, False, "cd_cnpjcpf", eslTexto, True, True, "cd_cnpjcpf", "CNPJ")
+    Call cFormatacaoForm.AdicionarColunaSpread(True, False, "ds_Pessoa", eslTexto, False, False, "ds_Pessoa", "Nome", 20, 50)
+    Call cFormatacaoForm.AdicionarColunaSpread(True, False, "ds_RazaoSocial", eslTexto, False, True, "ds_RazaoSocial", "Razão Social", 20, 30)
+    Call cFormatacaoForm.AdicionarColunaSpread(True, False, "ds_Endereco", eslTexto, False, True, "ds_Endereco", "Endereço", 25, 100)
+    Call cFormatacaoForm.AdicionarColunaSpread(True, False, "cd_CEP", eslTexto, False, True, "cd_CEP", "CEP", 25, 100)
+    Call cFormatacaoForm.AdicionarColunaSpread(True, False, "ds_Bairro", eslTexto, False, True, "ds_Bairro", "Bairro", 25, 100)
+    Call cFormatacaoForm.AdicionarColunaSpread(True, False, "ds_Cidade", eslTexto, False, True, "ds_Cidade", "Cidade", 25, 100)
+    Call cFormatacaoForm.AdicionarColunaSpread(True, False, "cd_Estado", eslTexto, False, True, "cd_Estado", "UF", 25, 100)
     
-    Set FormatarSpreadPessoaContato = cFormatacaoForm
+    Set FormatarSpreadPessoa = cFormatacaoForm
     mstrMensagemRetorno = ""
     
     Exit Function
